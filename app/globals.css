@@ -8,10 +8,11 @@
 
 @layer utilities {
 
+  .text-primary {
+    color: #f48739;
+  }
 
-}
-
-body {
-  background-color: var(--bg-primary);
-  color: white;
+  .text-secondary {
+    color: #0051ff;
+  }
 }
