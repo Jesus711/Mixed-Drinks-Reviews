@@ -28,7 +28,7 @@ const DrinkCard = ({ idDrink, name, category, alcoholic, glass, instructions, im
 
 
   return (
-    <Card className="min-w-[300px] max-w-sm w-full border-white border-2 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap">
+    <Card className="hover:cursor-pointer min-w-[300px] max-w-sm w-full border-white border-2 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap">
       <CardHeader>
         <CardTitle>{name}</CardTitle>
         <CardDescription>{alcoholic}</CardDescription>
