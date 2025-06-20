@@ -15,4 +15,19 @@
   .text-secondary {
     color: #0051ff;
   }
+
+  .animate-dot-bounce {
+    animation: dotBounce 1.2s ease-in-out infinite;
+  }
+
+  @keyframes dotBounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+
 }
