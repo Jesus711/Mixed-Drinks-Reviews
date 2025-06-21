@@ -3,10 +3,12 @@ import { Card, CardDescription, CardHeader, CardTitle, CardAction, CardContent, 
 import { Button } from './ui/button'
 import { Drink } from '@/types'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 
 const DrinkCard = ({ idDrink, name, category, alcoholic, glass, instructions, image, tags, dateModified, DrinkIngredients }: Drink) => {
 
+  const router = useRouter();
 
   if (!idDrink) {
     return (
@@ -26,9 +28,13 @@ const DrinkCard = ({ idDrink, name, category, alcoholic, glass, instructions, im
     )
   }
 
+  const handleNav = () => {
+    router.push(`/drink/${idDrink}`)
+  }
+
 
   return (
-    <Card className="hover:cursor-pointer min-w-[300px] max-w-sm w-full border-white border-2 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap">
+    <Card onClick={handleNav} className="animate-fade-in hover:cursor-pointer min-w-[300px] max-w-sm w-full border-white border-2 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap">
       <CardHeader>
         <CardTitle>{name}</CardTitle>
         <CardDescription>{alcoholic}</CardDescription>
