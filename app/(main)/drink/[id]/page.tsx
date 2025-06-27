@@ -6,6 +6,7 @@ import { Drink } from "@/types"
 import { supabase } from "@/lib/supabaseClient"
 import Loading from "@/components/Loading"
 import DrinkFullView from "@/components/DrinkFullView"
+import FullViewCardSkeleton from "@/components/FullViewCardSkeleton"
 
 const DrinkPage = () => {
     const { id } = useParams();
@@ -25,7 +26,7 @@ const DrinkPage = () => {
                 setDrink(data)
             }
 
-            setLoading(false);
+            setTimeout(() => setLoading(false), 1000)
         }
 
         getDrinkInfo()
@@ -34,7 +35,10 @@ const DrinkPage = () => {
 
     if (loading) {
         return (
-            <Loading />
+            <div className="flex flex-col justify-center items-center gap-y-5">
+                <Loading />
+                <FullViewCardSkeleton />
+            </div>
         )
     }
 

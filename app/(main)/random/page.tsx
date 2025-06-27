@@ -6,6 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Loading from "@/components/Loading";
 import DrinkCard from "@/components/DrinkCard";
 import CardSkeleton from "@/components/CardSkeleton";
+import DrinkFullView from "@/components/DrinkFullView";
+import FullViewCardSkeleton from "@/components/FullViewCardSkeleton";
 
 type TimeRemaining = {
     hours: number;
@@ -79,7 +81,7 @@ const RandomBev = () => {
                 console.log(error);
             }
             finally {
-                setTimeout(() => setLoading(false), 1000)
+                setTimeout(() => setLoading(false), 500)
             }
         }
 
@@ -97,7 +99,7 @@ const RandomBev = () => {
         return (
             <div className="flex flex-col justify-center items-center gap-y-5">
                 <Loading />
-                <CardSkeleton />
+                <FullViewCardSkeleton />
             </div>
         )
     }
@@ -108,7 +110,7 @@ const RandomBev = () => {
         <div className="flex flex-col justify-center items-center gap-y-5">
             <h2 className="text-3xl text-blue-200 font-bold text-center">Next Random Bev in {timeRemaining.hours}hr {timeRemaining.minutes}m {timeRemaining.seconds}s</h2>
 
-            { drink !== null ? <DrinkCard {...drink} /> : (
+            { drink !== null ? <DrinkFullView {...drink} /> : (
                 <Loading message="Error" />
             )}
         </div>
