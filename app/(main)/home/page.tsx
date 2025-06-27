@@ -5,12 +5,17 @@ import { useRouter } from 'next/navigation'
 import DrinkCard from '@/components/DrinkCard'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Drink } from '@/types'
+import CardSkeleton from '@/components/CardSkeleton'
 
 const HomePage = () => {
 
   const [userName, setUserName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [drinks, setDrinks] = useState<Drink[]>([]);
+  const [prevViewedDrinks, setPrevViewedDrinks] = useState<Drink[]>([]);
+  const [ratedDrinks, setRatedDrinks] = useState<Drink[]>([]);
+
+
   const router = useRouter();
 
   useEffect(() => {
@@ -30,6 +35,8 @@ const HomePage = () => {
         setDrinks(data);
       }
 
+      getLastViewed()
+
       console.log("HELLO", user)
       setUserName(user?.user_metadata.display_name);
       setTimeout(() => setLoading(false), 500);
@@ -47,22 +54,45 @@ const HomePage = () => {
       }
     }
 
+    const getUserRatedDrinks = async () => {
+      // 1. Get drink IDs the user rated
+      const { data: rated, error: ratedError } = await supabase
+        .from('RatedDrinks')
+        .select('drink_id')
+        .eq('userID', (await supabase.auth.getUser()).data.user?.id);
+
+      if (ratedError) {
+        console.error('Error fetching rated drinks:', ratedError);
+      } else {
+        const drinkIds = rated.map(r => r.drink_id);
+
+        // 2. Get drinks where id is in rated drink IDs
+        const { data: drinks, error: drinksError } = await supabase
+          .from('drinks')
+          .select('*')
+          .in('id', drinkIds);
+
+        if (drinksError) {
+          console.error('Error fetching drinks:', drinksError);
+        } else {
+          console.log('Rated drinks:', drinks);
+          setDrinks(drinks);
+        }
+      }
+
+    }
+
+    const getLastViewed = () => {
+      const stored = window.localStorage.getItem("lastViewed")
+      if (stored !== null) {
+        const prev = JSON.parse(stored)
+        setPrevViewedDrinks(prev)
+      }
+    }
+
     getUser();
 
   }, [])
-
-
-  if (loading) {
-    return (
-      <div className='w-full flex flex-col justify-center items-center gap-y-5'>
-
-        <h1 className='text-primary font-bold text-5xl text-center'>LOADING...</h1>
-        <div className='flex justify-between'>
-          {/* Skeleton Components */}
-        </div>
-      </div>
-    )
-  }
 
 
   return (
@@ -70,27 +100,67 @@ const HomePage = () => {
 
       <h1 className='text-primary text-4xl font-semibold'>Welcome {userName}</h1>
 
-      <section className='flex-1 flex flex-col'>
+      <section className='flex-1 flex flex-col gap-y-1.5'>
         <h2 className='text-primary text-3xl font-semibold'>Drink Recommendations: </h2>
-        <ScrollArea className='w-full rounded-2xl border-2 border-orange-400 whitespace-nowrap'>
-          <div className='p-6 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
-            {drinks.map((drink, index) => (
-              <DrinkCard {...drink} key={index} />
+        {loading ? <div className='w-full rounded-2xl border-4 border-orange-400 p-6 flex justify-center items-center space-x-8'>
+          {Array(5).fill(0).map((_, index) => (
+            <CardSkeleton key={index} />
+          ))}
+        </div> : (
+          <ScrollArea className='w-full rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
+            <div className='p-6 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
+              {drinks.map((drink, index) => (
+                <DrinkCard {...drink} key={index} />
+              ))}
+            </div>
+            <ScrollBar orientation='horizontal' className='h-3' />
+          </ScrollArea>
+        )}
+
+      </section>
+
+      {(loading || prevViewedDrinks.length != 0) &&
+        <section className='flex-1 flex flex-col gap-y-1.5'>
+          <h2 className='text-primary text-3xl font-semibold'>Previously Viewed:</h2>
+          {loading ? <div className='w-full rounded-2xl border-4 border-orange-400 p-6 flex justify-center items-center space-x-8'>
+            {Array(5).fill(0).map((_, index) => (
+              <CardSkeleton key={index} />
             ))}
-          </div>
-          <ScrollBar orientation='horizontal' className='h-3' />
-        </ScrollArea>
+          </div> :
+            (
+              <ScrollArea className='w-full rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
+                <div className='p-6 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
+                  {prevViewedDrinks.map((drink, index) => (
+                    <DrinkCard {...drink} key={index} />
+                  ))}
+                </div>
+                <ScrollBar orientation='horizontal' className='h-3' />
+              </ScrollArea>
+            )}
+        </section>
+      }
 
-      </section>
 
-      <section className='flex-1'>
-        <h2 className='text-primary text-3xl font-semibold'>Previously Viewed:</h2>
-      </section>
-
-
-      <section className='flex-1'>
-        <h2 className='text-primary text-3xl font-semibold'>Drinks rated by me:</h2>
-      </section>
+      {(loading || ratedDrinks.length != 0) &&
+        <section className='flex-1 flex flex-col gap-y-1.5'>
+          <h2 className='text-primary text-3xl font-semibold'>Drinks rated by me:</h2>
+          {loading ? <div className='w-full rounded-2xl border-4 border-orange-400 p-6 flex justify-center items-center space-x-8'>
+            {Array(5).fill(0).map((_, index) => (
+              <CardSkeleton key={index} />
+            ))}
+          </div> :
+            (
+              <ScrollArea className='w-full rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
+                <div className='p-6 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
+                  {ratedDrinks.map((drink, index) => (
+                    <DrinkCard {...drink} key={index} />
+                  ))}
+                </div>
+                <ScrollBar orientation='horizontal' className='h-3' />
+              </ScrollArea>
+            )}
+        </section>
+      }
 
     </div>
   )
