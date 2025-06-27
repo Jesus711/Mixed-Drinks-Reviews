@@ -9,16 +9,31 @@ const DrinkCard = ({ idDrink, name, category, alcoholic, glass, instructions, im
   const router = useRouter();
 
   const handleNav = () => {
+    const stored = window.localStorage.getItem("lastViewed")
+    const drink = {idDrink, name, category, alcoholic, glass, instructions, image, tags, dateModified, DrinkIngredients, avg_rating, rating_count}
+
+    let prevViewed: Drink[] = stored ? JSON.parse(stored) : []
+
+    prevViewed = prevViewed.filter((value) => value.idDrink != drink.idDrink)
+
+    prevViewed.unshift(drink)
+
+    if (prevViewed.length > 5) {
+      prevViewed.pop()
+    }
+
+    window.localStorage.setItem("lastViewed", JSON.stringify(prevViewed));
+
     router.push(`/drink/${idDrink}`)
   }
 
 
   return (
-    <Card onClick={handleNav} className="animate-fade-in hover:cursor-pointer min-w-[300px] max-w-sm w-full border-white border-2 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap">
+    <Card onClick={handleNav} className="animate-fade-in hover:cursor-pointer min-w-[300px] max-w-sm w-full border-gray-300 border-4 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap">
       <CardHeader>
         <CardTitle>{name}</CardTitle>
         <CardDescription>{alcoholic}</CardDescription>
-        <CardAction><Button>View More</Button></CardAction>
+        <CardAction><Button className='hover:cursor-pointer'>View More</Button></CardAction>
       </CardHeader>
       <CardContent className='flex justify-center items-center'>
         <Image priority src={`/cocktail_images/${idDrink}.jpg`} alt={name} width={300} height={300} />
