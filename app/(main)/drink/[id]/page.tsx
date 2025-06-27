@@ -1,10 +1,11 @@
 'use client'
-import DrinkCard from "@/components/DrinkCard"
+
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { Drink } from "@/types"
 import { supabase } from "@/lib/supabaseClient"
 import Loading from "@/components/Loading"
+import DrinkFullView from "@/components/DrinkFullView"
 
 const DrinkPage = () => {
     const { id } = useParams();
@@ -39,9 +40,8 @@ const DrinkPage = () => {
 
 
   return (
-    <div>
-
-        {drink !== null ? <DrinkCard {...drink} /> : (
+    <div className="flex-1 flex justify-center items-center">
+        {drink !== null ? <DrinkFullView {...drink} /> : (
             <Loading message="ERRROR" />
         )}
     </div>
