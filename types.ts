@@ -22,7 +22,9 @@ type Drink = {
   image: string,
   tags: string,
   dateModified: string,
-  DrinkIngredients: Ingredient[]
+  DrinkIngredients: Ingredient[],
+  avg_rating: number,
+  rating_count: number
 }
 
 
