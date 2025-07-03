@@ -69,16 +69,16 @@ const LoginForm = () => {
   }
 
   return (
-    <Card className="bg-gray-950 px-8 py-3 w-full max-w-sm text-white border-orange-400 border-2">
-      <form className="w-full flex flex-col justify-center items-center gap-y-3"
+    <Card className="bg-gray-950 sm:px-8 sm:py-3 px-6 py-2 w-full max-w-md text-primary border-orange-400 border-2">
+      <form className="w-full flex flex-col justify-center items-center gap-y-5"
         onSubmit={(e) => handleSubmit(e)}>
-        <h2 className="text-2xl text-center font-bold">{isSignUp ? "Create Your Account" : "Welcome Back!"}</h2>
+        <h2 className="sm:text-3xl text-2xl text-center font-bold">{isSignUp ? "Create Your Account" : "Welcome Back!"}</h2>
 
         {isSignUp && (
           <div className="w-full flex flex-col text-left">
-            <Label htmlFor="username" className="text-xl">Username: </Label >
+            <Label htmlFor="username" className="sm:text-2xl text-xl">Username: </Label >
             <Input
-              className="bg-gray-800 border-gray-700 focus:border-blue-400 focus:ring-blue-400 placeholder:text-gray-500 placeholder:text-lg text-2xl"
+              className="bg-gray-800 border-gray-700 text-secondary focus:border-blue-400 focus:ring-blue-400 placeholder:text-gray-500 placeholder:text-lg md:text-lg"
               name="username" type="text" placeholder="Newuser!" required
               onChange={(e) => setUserName(e.target.value)}
               value={userName}
@@ -89,9 +89,9 @@ const LoginForm = () => {
         )}
          
         <div className="w-full flex flex-col text-left">
-          <Label htmlFor="email" className="text-xl">Email: </Label >
+          <Label htmlFor="email" className="sm:text-2xl text-xl">Email: </Label >
           <Input
-            className="bg-gray-800 border-gray-700 focus:border-blue-400 focus:ring-blue-400 placeholder:text-gray-500 placeholder:text-lg text-2xl"
+            className="bg-gray-800 border-gray-700 text-secondary focus:border-blue-400 focus:ring-blue-400 placeholder:text-gray-500 placeholder:text-lg md:text-lg"
             name="email" type='email' placeholder="example@gmail.com" required
             onChange={(e) => setEmail(e.target.value)}
             value={email}
@@ -101,11 +101,11 @@ const LoginForm = () => {
 
         <div className="w-full flex flex-col text-left pb-3">
           <div className="flex justify-between">
-            <Label htmlFor="password" className="text-xl">Password: </Label >
-            <Button variant={"link"} type="button" className="text-secondary text-md">Forgot Password?</Button>
+            <Label htmlFor="password" className="sm:text-2xl text-xl">Password: </Label >
+            {!isSignUp && <Button variant={"link"} type="button" className="text-secondary xs:text-md text-sm hover:cursor-pointer">Forgot Password?</Button>}
           </div>
           <Input
-            className="bg-gray-800 border-gray-700 focus:border-blue-400 focus:ring-blue-400 placeholder:text-gray-500 placeholder:text-lg text-2xl"
+            className="bg-gray-800 border-gray-700 text-secondary focus:border-blue-400 focus:ring-blue-400 placeholder:text-gray-500 placeholder:text-lg md:text-lg"
             name="password" type="password" placeholder="••••••••" required
             onChange={(e) => setPassword(e.target.value)}
             value={password}
@@ -114,9 +114,9 @@ const LoginForm = () => {
           />
         </div>
 
-        <Button size={"lg"} variant={"outline"} type="submit" className="bg-orange-400 w-full text-black">{isSignUp ? "Create Account" : "Login"}</Button>
+        <Button size={"lg"} variant={"outline"} type="submit" className="bg-orange-400 w-full text-black sm:text-xl text-lg hover:cursor-pointer">{isSignUp ? "Create Account" : "Login"}</Button>
 
-        <Button size={"sm"} variant={"link"} type="button" onClick={() => setIsSignUp(prev => !prev)} className="w-full text-secondary text-md">{isSignUp ? "Already have an account?" : "Need to Sign Up?"}</Button>
+        <Button size={"sm"} variant={"link"} type="button" onClick={() => setIsSignUp(prev => !prev)} className="w-full text-secondary text-md hover:cursor-pointer">{isSignUp ? "Already have an account?" : "Need to Sign Up?"}</Button>
       </form>
     </Card>
 
