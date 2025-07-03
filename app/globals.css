@@ -6,6 +6,10 @@
 
 @layer theme, base, components, utilities;
 
+@theme {
+  --breakpoint-xs: 25rem;
+}
+
 @layer utilities {
 
   .text-primary {
@@ -13,7 +17,7 @@
   }
 
   .text-secondary {
-    color: #0051ff;
+    color: #64B5F6;
   }
 
   .animate-dot-bounce {
