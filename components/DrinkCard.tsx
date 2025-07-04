@@ -29,18 +29,18 @@ const DrinkCard = ({ idDrink, name, category, alcoholic, glass, instructions, im
 
 
   return (
-    <Card onClick={handleNav} className="animate-fade-in hover:cursor-pointer min-w-[300px] max-w-sm w-full border-gray-300 border-4 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap">
+    <Card onClick={handleNav} className="animate-fade-in hover:cursor-pointer md:w-sm min-w-[300px] border-gray-300 border-4 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap">
       <CardHeader>
         <CardTitle>{name}</CardTitle>
         <CardDescription>{alcoholic}</CardDescription>
-        <CardAction><Button className='hover:cursor-pointer'>View More</Button></CardAction>
+        <CardAction className='hover:cursor-pointer md:text-lg text-sm'>View More</CardAction>
       </CardHeader>
       <CardContent className='flex justify-center items-center'>
         <Image priority src={`/cocktail_images/${idDrink}.jpg`} alt={name} width={300} height={300} />
       </CardContent>
-      <CardFooter className='flex flex-col gap-y-2'>
-        <p>{category}</p>
-        <p>{rating_count == 0 ? "Unrated" : `Rating: ${avg_rating} / 5(${rating_count})`}</p>
+      <CardFooter className='flex flex-col md:gap-y-2 gay-y-1'>
+        <p className='md:text-xl text-md font-semibold'>{category}</p>
+        <p className='md:text-xl text-md text-amber-300'>{rating_count == 0 ? "Unrated" : `Rating: ${avg_rating}/5 (${rating_count})`}</p>
       </CardFooter>
     </Card>
   )
