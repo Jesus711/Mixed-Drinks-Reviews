@@ -1,18 +1,43 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardDescription, CardHeader, CardTitle, CardAction, CardContent, CardFooter } from './ui/card'
-import { Button } from './ui/button'
 import { Drink } from '@/types'
 import Image from 'next/image'
 import StarRating from './StarRating'
+import { supabase } from '@/lib/supabaseClient'
 
 
 
 const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions, image, tags, dateModified, DrinkIngredients, avg_rating, rating_count }: Drink) => {
+  const [userRated, setUserRating] = useState<number>(-1);
 
-  console.log(instructions)
+  console.log(avg_rating, rating_count)
+
+  const displayUserRating = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return
+    }
+
+    console.log(user.id, idDrink);
+
+    const { data, error } = await supabase.from("drink_ratings").select("rating").eq("user_id", user.id).eq('idDrink', idDrink).maybeSingle();
+
+    if (data === null){
+      console.log("User has not rated this drink!")
+    }
+    else {
+      setUserRating(data.rating)
+    }
+  }
+
+  useEffect(() => {
+    displayUserRating()
+  }, [])
+
 
   return (
-    <Card className="animate-fade-in min-w-[300px] max-w-5xl w-full border-orange-400 border-4 text-white h-full flex flex-col justify-between whitespace-wrap text-wrap">
+    <Card className="animate-fade-in min-w-[300px] max-w-4xl w-full border-orange-400 border-4 text-white h-full flex flex-col justify-between whitespace-wrap text-wrap">
       <CardHeader className='w-full flex-1 flex justify-between items-center'>
         <div className=''>
           <CardTitle className='text-3xl'>{name}</CardTitle>
@@ -25,23 +50,30 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
             <p className='text-lg'>Be the First!</p>
           </div>
         ) : (
-        <div>
-          <StarRating />
-        </div>
-      )}
+          <div>
+            <StarRating idDrink={idDrink} defaultValue={avg_rating} rating_count={rating_count} userRated={false}/>
+          </div>
+        )}
       </CardHeader>
 
       <CardContent className='flex'>
         <div className='flex flex-col gap-y-5'>
-          <Image priority className='rounded-md' src={`/cocktail_images/${idDrink}.jpg`} alt={name} width={400} height={400} />
-          <div>
-            <h3 className='text-center text-2xl font-bold'>Select Your Rating:</h3>
-            <StarRating />
-          </div>
+          <Image priority className='rounded-md' src={`/cocktail_images/${idDrink}.jpg`} alt={name} width={360} height={360} />
+          {userRated != -1 ? (
+            <div>
+              <h3 className='text-center text-2xl font-bold'>Your Rating: {userRated}</h3>
+              <StarRating idDrink={idDrink} rating_count={rating_count} defaultValue={userRated} userRated={true}/>
+            </div>
+          ) : (
+            <div>
+              <h3 className='text-center text-2xl font-bold'>Select Your Rating:</h3>
+              <StarRating idDrink={idDrink} rating_count={rating_count} userRated={false} />
+            </div>)
+          }
         </div>
-        <div className='flex-1 flex flex-col justify-start items-center gap-y-3'>
+        <div className={`flex-1 flex flex-col items-center justify-start gap-y-3 ${DrinkIngredients.length <= 5 && 'py-10'}`}>
           <h2 className='text-4xl font-semibold text-center'>Ingredients:</h2>
-          <ul className='flex flex-col gap-y-2 text-left'>
+          <ul className={`flex flex-col gap-y-2 text-left `}>
             {DrinkIngredients.map((ingred, index) => (
               <li className='text-3xl' key={index}>{ingred.ingredient} - {ingred.measurement}</li>
             ))}
