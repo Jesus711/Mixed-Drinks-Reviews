@@ -26,7 +26,7 @@ const HomePage = () => {
         router.push("/")
       }
 
-      const { data, error } = await supabase.from("Drinks").select("*, DrinkIngredients(*)").limit(5);
+      const { data, error } = await supabase.from("drinks").select("*, DrinkIngredients(*)").limit(5);
       if (error) {
         console.log("ERROR", error.message);
       }
@@ -36,6 +36,7 @@ const HomePage = () => {
       }
 
       getLastViewed()
+      getUserRatedDrinks()
 
       console.log("HELLO", user)
       setUserName(user?.user_metadata.display_name);
@@ -44,7 +45,7 @@ const HomePage = () => {
 
     const getDrinkRecommendations = async () => {
 
-      const { data, error } = await supabase.from("Drinks").select("*, DrinkIngredients(*)").limit(5);
+      const { data, error } = await supabase.from("drinks").select("*, DrinkIngredients(*)").limit(5);
       if (error) {
         console.log("ERROR", error.message);
       }
@@ -55,29 +56,18 @@ const HomePage = () => {
     }
 
     const getUserRatedDrinks = async () => {
-      // 1. Get drink IDs the user rated
+   
       const { data: rated, error: ratedError } = await supabase
-        .from('RatedDrinks')
-        .select('drink_id')
-        .eq('userID', (await supabase.auth.getUser()).data.user?.id);
+        .from('drink_ratings')
+        .select('*, drinks(*)')
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
 
       if (ratedError) {
         console.error('Error fetching rated drinks:', ratedError);
       } else {
-        const drinkIds = rated.map(r => r.drink_id);
-
-        // 2. Get drinks where id is in rated drink IDs
-        const { data: drinks, error: drinksError } = await supabase
-          .from('drinks')
-          .select('*')
-          .in('id', drinkIds);
-
-        if (drinksError) {
-          console.error('Error fetching drinks:', drinksError);
-        } else {
-          console.log('Rated drinks:', drinks);
-          setDrinks(drinks);
-        }
+        const drinks = rated.map(r => r.drinks);
+        console.log(drinks)
+        setRatedDrinks(drinks)
       }
 
     }
@@ -96,69 +86,61 @@ const HomePage = () => {
 
 
   return (
-    <div className='flex-1 flex flex-col gap-y-5'>
+    <div className='flex-1 flex flex-col gap-y-7'>
 
-      <h1 className='text-primary text-4xl font-semibold'>Welcome {userName}</h1>
+      <h1 className='text-primary md:text-4xl md:text-left text-2xl text-center font-semibold'>Welcome <span className='text-blue-300'>{userName}</span></h1>
 
       <section className='flex-1 flex flex-col gap-y-1.5'>
-        <h2 className='text-primary text-3xl font-semibold'>Drink Recommendations: </h2>
-        {loading ? <div className='w-full rounded-2xl border-4 border-orange-400 p-6 flex justify-center items-center space-x-8'>
-          {Array(5).fill(0).map((_, index) => (
-            <CardSkeleton key={index} />
-          ))}
-        </div> : (
+        <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>Drink Recommendations: </h2>
           <ScrollArea className='w-full rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
-            <div className='p-6 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
-              {drinks.map((drink, index) => (
-                <DrinkCard {...drink} key={index} />
-              ))}
+            <div className='md:p-6 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
+              {loading ? Array(5).fill(0).map((_, index) => (
+                <CardSkeleton key={index} />
+              )) 
+              : 
+              drinks.map((drink, index) => (
+                  <DrinkCard {...drink} key={index} />
+                ))}
             </div>
             <ScrollBar orientation='horizontal' className='h-3' />
           </ScrollArea>
-        )}
 
       </section>
 
       {(loading || prevViewedDrinks.length != 0) &&
         <section className='flex-1 flex flex-col gap-y-1.5'>
-          <h2 className='text-primary text-3xl font-semibold'>Previously Viewed:</h2>
-          {loading ? <div className='w-full rounded-2xl border-4 border-orange-400 p-6 flex justify-center items-center space-x-8'>
-            {Array(5).fill(0).map((_, index) => (
-              <CardSkeleton key={index} />
-            ))}
-          </div> :
-            (
-              <ScrollArea className='w-full rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
-                <div className='p-6 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
-                  {prevViewedDrinks.map((drink, index) => (
-                    <DrinkCard {...drink} key={index} />
-                  ))}
-                </div>
-                <ScrollBar orientation='horizontal' className='h-3' />
-              </ScrollArea>
-            )}
+          <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>Previously Viewed:</h2>
+          <ScrollArea className='w-full rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
+            <div className='md:p-6 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
+              {loading ? Array(5).fill(0).map((_, index) => (
+                <CardSkeleton key={index} />
+              )) 
+              : 
+              prevViewedDrinks.map((drink, index) => (
+                  <DrinkCard {...drink} key={index} />
+                ))}
+            </div>
+            <ScrollBar orientation='horizontal' className='h-3' />
+          </ScrollArea>
         </section>
       }
 
 
       {(loading || ratedDrinks.length != 0) &&
         <section className='flex-1 flex flex-col gap-y-1.5'>
-          <h2 className='text-primary text-3xl font-semibold'>Drinks rated by me:</h2>
-          {loading ? <div className='w-full rounded-2xl border-4 border-orange-400 p-6 flex justify-center items-center space-x-8'>
-            {Array(5).fill(0).map((_, index) => (
-              <CardSkeleton key={index} />
-            ))}
-          </div> :
-            (
-              <ScrollArea className='w-full rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
-                <div className='p-6 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
-                  {ratedDrinks.map((drink, index) => (
-                    <DrinkCard {...drink} key={index} />
-                  ))}
-                </div>
-                <ScrollBar orientation='horizontal' className='h-3' />
-              </ScrollArea>
-            )}
+          <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>Drinks rated by me:</h2>
+          <ScrollArea className='w-full rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
+            <div className='md:p-6 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
+              {loading ? Array(5).fill(0).map((_, index) => (
+                <CardSkeleton key={index} />
+              )) 
+              : 
+              ratedDrinks.map((drink, index) => (
+                  <DrinkCard {...drink} key={index} />
+                ))}
+            </div>
+            <ScrollBar orientation='horizontal' className='h-3' />
+          </ScrollArea>
         </section>
       }
 
