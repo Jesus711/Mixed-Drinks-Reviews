@@ -2,6 +2,7 @@
 
 :root {
   --bg-primary: rgb(20, 38, 128);
+  scroll-behavior: smooth;
 }
 
 @layer theme, base, components, utilities;
