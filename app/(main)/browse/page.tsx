@@ -112,7 +112,7 @@ const Browse = () => {
         setDrinkList(data);
       }
 
-      setTimeout(() => setLoading(false), 500);
+      setLoading(false)
     }
 
     getDrinks();
@@ -131,7 +131,7 @@ const Browse = () => {
       {/* Drink List */}
       <div className='flex-1 flex flex-wrap justify-center items-center gap-10'>
         {loading ?
-          Array(20).fill(0).map((_, index) => (
+          Array(18).fill(0).map((_, index) => (
             <CardSkeleton key={index} />
           ))
           : drinkList.map((drink, index) => (
@@ -140,24 +140,7 @@ const Browse = () => {
 
       </div>
 
-      {/* {totalPages > 0 && 
-        <ul className='flex justify-center items-center gap-x-5'>
-          <li className="text-secondary text-2xl font-semibold hover:cursor-pointer">{'<'}</li>
-          <li onClick={() => handlePageNav(1)} className={`underline text-2xl font-semibold hover:cursor-pointer ${page === 1 ? 'text-primary' : 'text-secondary'}`}>1</li>
-          {Array(totalPages).fill(0).map((_, index) => {
-            if (index == 0 || index == totalPages - 1){
-              return
-            }
-            return (
-            <li onClick={() => handlePageNav(index + 1)} key={index} className={`underline text-2xl font-semibold hover:cursor-pointer ${page === index + 1 ? 'text-primary' : 'text-secondary'}`}>{index + 1}</li>
-          )})}
-          <li onClick={() => handlePageNav(totalPages)} className={`underline text-2xl font-semibold hover:cursor-pointer ${page === totalPages ? 'text-primary' : 'text-secondary'}`}>{totalPages}</li>
-          <li className="text-secondary text-2xl font-semibold hover:cursor-pointer">{'>'}</li>
-        </ul>
-        } */}
-
-
-        {totalPages > 0 && 
+        {!loading && totalPages > 0 && 
         <ul className='flex justify-center items-center gap-x-5'>
           <li onClick={() => handlePageNav(page - 1)} className={`text-2xl font-semibold hover:cursor-pointer text-secondary`}>{'<'}Prev Page</li>
           {pageList.map((p, index) => {

@@ -18,7 +18,7 @@ const DrinkPage = () => {
     useEffect(() => {
 
         const getDrinkInfo = async () => {
-            const { data, error }  = await supabase.from("Drinks").select("*, DrinkIngredients(*)").eq("idDrink", id).single();
+            const { data, error }  = await supabase.from("drinks").select("*, DrinkIngredients(*)").eq("idDrink", id).single();
 
             if (error){
                 console.log(error)
@@ -26,7 +26,7 @@ const DrinkPage = () => {
                 setDrink(data)
             }
 
-            setTimeout(() => setLoading(false), 1000)
+            setLoading(false)
         }
 
         getDrinkInfo()
