@@ -4,6 +4,8 @@ import { Drink } from '@/types'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
+const MAX_PREV_DRINKS_STORED = 7
+
 const DrinkCard = ({ idDrink, name, category, alcoholic, glass, instructions, image, tags, dateModified, DrinkIngredients, avg_rating, rating_count }: Drink) => {
 
   const router = useRouter();
@@ -18,7 +20,7 @@ const DrinkCard = ({ idDrink, name, category, alcoholic, glass, instructions, im
 
     prevViewed.unshift(drink)
 
-    if (prevViewed.length > 5) {
+    if (prevViewed.length > MAX_PREV_DRINKS_STORED) {
       prevViewed.pop()
     }
 
