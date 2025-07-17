@@ -10,33 +10,13 @@ import DrinkFullView from "@/components/DrinkFullView";
 import FullViewCardSkeleton from "@/components/FullViewCardSkeleton";
 import CountdownTimer from "@/components/CountdownTimer";
 
-type TimeRemaining = {
-    hours: number;
-    minutes: number;
-    seconds: number;
-}
 
 const RandomBev = () => {
 
     const [loading, setLoading] = useState<boolean>(true);
     const [drink, setDrink] = useState<Drink | null>(null);
-    const [timeRemaining, setTimeRemaining] = useState<TimeRemaining>(getTimeUntilMidnight());
 
-
-    function getTimeUntilMidnight() {
-        const now = new Date();
-        const midnight = new Date();
-        midnight.setHours(24, 0, 0, 0); // Set time to midnight
-
-        const diffMs = midnight.getTime() - now.getTime();
-        const hours = Math.floor(diffMs / (1000 * 60 * 60));
-        const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-
-        return { hours, minutes, seconds };
-    }
-
-
+    
     useEffect(() => {
 
         const getRandomDrink = async () => {
