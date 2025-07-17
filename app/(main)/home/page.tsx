@@ -145,7 +145,7 @@ const HomePage = () => {
 
 
   return (
-    <div className='flex-1 flex flex-col gap-y-7'>
+    <div className='flex-1 flex flex-col gap-y-9 px-5'>
 
       <h1 className='text-primary md:text-4xl md:text-left text-2xl text-center font-semibold'>Welcome <span className='text-blue-300'>{userName}</span></h1>
 
