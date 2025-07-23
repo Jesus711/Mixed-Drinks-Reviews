@@ -69,13 +69,13 @@ const LoginForm = () => {
   }
 
   return (
-    <Card className="bg-gray-950 sm:px-8 sm:py-3 px-6 py-2 w-full max-w-md text-primary border-orange-400 border-2">
+    <Card className="bg-gray-950 sm:px-8 sm:py-6 px-6 py-2 w-full max-w-md text-primary border-orange-400 border-2">
       <form className="w-full flex flex-col justify-center items-center gap-y-5"
         onSubmit={(e) => handleSubmit(e)}>
         <h2 className="sm:text-3xl text-2xl text-center font-bold">{isSignUp ? "Create Your Account" : "Welcome Back!"}</h2>
 
         {isSignUp && (
-          <div className="w-full flex flex-col text-left">
+          <div className="w-full flex flex-col text-left gap-y-1">
             <Label htmlFor="username" className="sm:text-2xl text-xl">Username: </Label >
             <Input
               className="bg-gray-800 border-gray-700 text-secondary focus:border-blue-400 focus:ring-blue-400 placeholder:text-gray-500 placeholder:text-lg md:text-lg"
@@ -83,12 +83,11 @@ const LoginForm = () => {
               onChange={(e) => setUserName(e.target.value)}
               value={userName}
               minLength={5}
-              
             />
           </div>
         )}
          
-        <div className="w-full flex flex-col text-left">
+        <div className="w-full flex flex-col text-left gap-y-1">
           <Label htmlFor="email" className="sm:text-2xl text-xl">Email: </Label >
           <Input
             className="bg-gray-800 border-gray-700 text-secondary focus:border-blue-400 focus:ring-blue-400 placeholder:text-gray-500 placeholder:text-lg md:text-lg"
@@ -99,7 +98,7 @@ const LoginForm = () => {
           />
         </div>
 
-        <div className="w-full flex flex-col text-left pb-3">
+        <div className="w-full flex flex-col text-left gap-y-1 pb-3">
           <div className="flex justify-between">
             <Label htmlFor="password" className="sm:text-2xl text-xl">Password: </Label >
             {!isSignUp && <Button variant={"link"} type="button" className="text-secondary xs:text-md text-sm hover:cursor-pointer">Forgot Password?</Button>}
