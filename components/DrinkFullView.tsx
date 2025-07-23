@@ -96,11 +96,11 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
 
 
   return (
-    <Card className="animate-fade-in min-w-[300px] max-w-4xl w-full border-orange-400 border-4 text-white h-full flex flex-col justify-between whitespace-wrap text-wrap">
+    <Card className="animate-fade-in md:min-w-[300px] md:max-w-4xl w-full border-orange-400 border-4 text-white h-full flex flex-col justify-between whitespace-wrap text-wrap">
       <CardHeader className='w-full flex-1 flex justify-between items-center'>
         <div className=''>
-          <CardTitle className='text-3xl'>{name}</CardTitle>
-          <CardDescription className='text-2xl'>{alcoholic}</CardDescription>
+          <CardTitle className='md:text-3xl text-lg'>{name}</CardTitle>
+          <CardDescription className='md:text-2xl text-lg'>{alcoholic}</CardDescription>
         </div>
 
         {ratingCount === 0 ? (
@@ -119,11 +119,11 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
         )}
       </CardHeader>
 
-      <CardContent className='flex'>
+      <CardContent className='flex lg:flex-row flex-col justify-center items-center gap-y-5'>
         <div className='flex flex-col gap-y-5'>
           <Image priority className='rounded-md' src={`/cocktail_images/${idDrink}.jpg`} alt={name} width={360} height={360} />
           {userRated != -1 ? (
-            <div className='flex flex-col justify-center items-center gap-y-1'>
+            <div className='flex flex-col justify-center items-center gap-y-2'>
               <h3 className='text-center text-2xl font-bold'>Your Rating: {userRated} Stars</h3>
               <StarRating rating={userRated} onRate={handleStarClicked} />
               <Button type='button' onClick={updateExistingRating} variant={"default"} className='bg-blue-500 text-lg px-3 cursor-pointer'>Update Rating</Button>
@@ -135,17 +135,17 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
             </div>)
           }
         </div>
-        <div className={`flex-1 flex flex-col items-center justify-start gap-y-3 ${DrinkIngredients.length <= 5 && 'py-10'}`}>
-          <h2 className='text-4xl font-semibold text-center'>Ingredients:</h2>
+        <div className={`flex-1 flex flex-col items-center justify-start gap-y-3 ${DrinkIngredients.length <= 5 && 'md:py-10 md:pt-0 pt-8'}`}>
+          <h2 className='md:text-4xl text-2xl font-semibold text-center'>Ingredients:</h2>
           <ul className={`flex flex-col gap-y-2 text-left `}>
             {DrinkIngredients.map((ingred, index) => (
-              <li className='text-3xl' key={index}>{ingred.ingredient} - {ingred.measurement}</li>
+              <li className='md:text-3xl text-2xl' key={index}>{ingred.ingredient} - {ingred.measurement}</li>
             ))}
           </ul>
         </div>
       </CardContent>
 
-      <CardFooter className='flex flex-col gap-y-2'>
+      <CardFooter className='flex flex-col gap-y-3'>
         <div className='flex flex-wrap justify-center items-center text-black gap-x-3'>
           <span className="bg-white p-2 text-lg rounded-md">{category}</span>
           <span className="bg-white p-2 text-lg rounded-md">{glass}</span>
@@ -161,7 +161,7 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
           })}
         </div>
 
-        <CardDescription className='text-2xl text-left'>
+        <CardDescription className='self-start px-2 text-2xl text-left'>
           <h2 className='text-3xl font-semibold text-left'>Instructions:</h2>
           {instructions.split(".").map((sentence, index) => {
 
@@ -170,7 +170,7 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
             }
 
             return (
-              <li key={index}>{sentence}</li>
+              <li key={index} className='pl-3'>{sentence}</li>
             )
           })}
         </CardDescription>
