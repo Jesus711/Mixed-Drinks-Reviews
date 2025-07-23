@@ -31,18 +31,20 @@ const DrinkCard = ({ idDrink, name, category, alcoholic, glass, instructions, im
 
 
   return (
-    <Card onClick={handleNav} className="animate-fade-in hover:cursor-pointer md:w-sm min-w-[300px] border-gray-300 border-4 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap">
+    <Card onClick={handleNav} className="animate-fade-in hover:cursor-pointer xl:w-[325px] md:w-[300px] w-[275px] border-gray-300 border-4 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap">
       <CardHeader>
-        <CardTitle>{name}</CardTitle>
-        <CardDescription>{alcoholic}</CardDescription>
-        <CardAction className='hover:cursor-pointer md:text-lg text-sm'>View More</CardAction>
+        <div className='flex flex-col justify-center '>
+        <CardTitle className='text-lg whitespace-nowrap overflow-hidden overflow-ellipsis'>{name}</CardTitle>
+        <CardDescription className='text-[16px]'>{alcoholic}</CardDescription>
+        </div>
+        <CardAction className='flex justify-center items-centerhover:cursor-pointer xl:text-[16px] text-sm'>View More</CardAction>
       </CardHeader>
       <CardContent className='flex justify-center items-center'>
-        <Image priority src={`/cocktail_images/${idDrink}.jpg`} alt={name} width={300} height={300} />
+        <Image className='rounded-sm' priority src={`/cocktail_images/${idDrink}.jpg`} alt={name} width={300} height={300} />
       </CardContent>
       <CardFooter className='flex flex-col md:gap-y-2 gay-y-1'>
         <p className='md:text-xl text-md font-semibold'>{category}</p>
-        <p className='md:text-xl text-md text-amber-300'>{rating_count == 0 ? "Unrated" : `Rating: ${avg_rating}/5 (${rating_count})`}</p>
+        <p className='md:text-xl text-md text-amber-300 font-bold'>{rating_count == 0 ? "Unrated" : `Rating: ${avg_rating}/5 (${rating_count})`}</p>
       </CardFooter>
     </Card>
   )
