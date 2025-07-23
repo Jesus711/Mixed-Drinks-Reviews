@@ -38,7 +38,7 @@ export default function HomeLayout({children,}: {children: React.ReactNode}) {
                 </nav>
 
                 <Button onClick={handleLogOut} className="md:flex hidden bg-red-500 font-semibold xl:text-lg lg:px-5 px-2 lg:py-3 py-2 text-md hover:cursor-pointer" variant={"destructive"} type="button">Logout</Button>
-                <Button onClick={() => setDisplayMenu(prev => !prev)} variant={"default"} className="md:hidden flex flex-col p-0 justify-center items-center cursor-pointer">
+                <Button onClick={() => setDisplayMenu(prev => !prev)} variant={"default"} className="md:hidden flex flex-col py-0 px-0 justify-center items-center gap-y-1.5 cursor-pointer">
                     <div className="bg-white w-8 h-1 rounded-md" />
                     <div className="bg-white w-8 h-1 rounded-md" />
                     <div className="bg-white w-8 h-1 rounded-md" />
@@ -49,6 +49,7 @@ export default function HomeLayout({children,}: {children: React.ReactNode}) {
                     <Link onClick={() => setDisplayMenu(false)} href={"/random"} className={`${path === "/random" ? "text-primary" : ""}`}>Random Bev</Link>
                     <Link onClick={() => setDisplayMenu(false)} href={"/browse"} className={`${path === "/browse" ? "text-primary" : ""}`}>Browse</Link>
                     <Link onClick={() => setDisplayMenu(false)} href={"/top"} className={`${path === "/top" ? "text-primary" : ""}`}>Top Rated</Link>
+                    <Button onClick={handleLogOut} className="flex bg-red-500 font-semibold px-2 py-2 text-lg hover:cursor-pointer" variant={"destructive"} type="button">Logout</Button>
                 </nav>
             </header>
 
