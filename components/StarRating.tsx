@@ -30,9 +30,9 @@ export default function StarRating({ max = 5, onRate, rating }: Props) {
   const getIcon = (index: number) => {
     let starRating = rating !== -1 ? rating : hoverRating;
 
-    if (starRating >= index + 1) return <FaStar className="text-orange-400 w-10 h-10" />;
-    if (starRating >= index + 0.5) return <FaStarHalfAlt className="text-orange-400 w-10 h-10" />;
-    return <FaRegStar className="text-gray-400 w-10 h-10" />;
+    if (starRating >= index + 1) return <FaStar className="text-orange-400 md:w-10 md:h-10 w-8 h-8" />;
+    if (starRating >= index + 0.5) return <FaStarHalfAlt className="text-orange-400 md:w-10 md:h-10 w-8 h-8" />;
+    return <FaRegStar className="text-gray-400 md:w-10 md:h-10 w-8 h-8" />;
   };
 
   return (
@@ -44,7 +44,7 @@ export default function StarRating({ max = 5, onRate, rating }: Props) {
         {Array.from({ length: max }, (_, i) => (
           <div
             key={i}
-            className="relative w-10 h-10"
+            className="relative md:w-10 w-8 md:h-10 h-8"
             onMouseMove={
               isReadOnly
                 ? undefined
