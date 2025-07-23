@@ -34,7 +34,7 @@ const CountdownTimer = () => {
     }, [])
 
   return (
-    <h2 className="text-3xl text-blue-200 font-bold text-center">Next Random Bev in {timeRemaining.hours}hr {timeRemaining.minutes}m {timeRemaining.seconds}s</h2>
+    <h2 className="md:text-3xl text-xl text-blue-200 font-bold text-center">Next Random Bev in {timeRemaining.hours}hr {timeRemaining.minutes}m {timeRemaining.seconds}s</h2>
   )
 }
 
