@@ -27,10 +27,16 @@ type Drink = {
   rating_count: number
 }
 
+type DrinkSection = {
+  title: string,
+  data: Drink[]
+}
+
 
 
 export type {
     FormData,
     Drink,
-    Ingredient
+    Ingredient,
+    DrinkSection
 }
