@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -19,6 +19,19 @@ export default function HomeLayout({children,}: {children: React.ReactNode}) {
         const { error } = await supabase.auth.signOut();
         router.push("/")
     }
+
+    const userLogged = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+            router.push("/")
+            return
+        }
+    }
+
+    useEffect(() => {
+        userLogged()
+    ,[]})
 
     
     return (
