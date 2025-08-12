@@ -33,7 +33,7 @@ const DrinkCard = ({ idDrink, name, category, alcoholic, glass, instructions, im
   return (
     <Card onClick={handleNav} className="animate-fade-in hover:cursor-pointer xl:w-[325px] md:w-[300px] w-[275px] border-gray-300 border-4 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap">
       <CardHeader>
-        <div className='flex flex-col justify-center '>
+        <div className='w-[65%] flex flex-col justify-center '>
         <CardTitle className='text-lg whitespace-nowrap overflow-hidden overflow-ellipsis'>{name}</CardTitle>
         <CardDescription className='text-[16px]'>{alcoholic}</CardDescription>
         </div>
