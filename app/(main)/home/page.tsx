@@ -23,7 +23,7 @@ const HomePage = () => {
   const router = useRouter();
 
   const ratingSort = (a: Drink, b: Drink) => {
-    if (a.avg_rating > b.avg_rating){
+    if (a.avg_rating > b.avg_rating) {
       return -1
     }
 
@@ -56,7 +56,7 @@ const HomePage = () => {
       // else, using the most recently viewed drink and one of the rated drinks, retrieve 10 drinks with similar ingredients
       // if the number of recommended drinks is less than 7, append the 5 top rated drinks
       if (!prevDrinks && !userRatedDrinks) {
-        const { data, error } = await supabase.from("drinks").select("*, DrinkIngredients(*)").order("avg_rating", {ascending: false}).limit(10);
+        const { data, error } = await supabase.from("drinks").select("*, DrinkIngredients(*)").order("avg_rating", { ascending: false }).limit(10);
         if (error) {
           console.log("ERROR", error.message);
         }
@@ -64,54 +64,54 @@ const HomePage = () => {
           setDrinks(data);
         }
       } else {
-          let ingredients: string[] = []
-          let ids: number[] = []
+        let ingredients: string[] = []
+        let ids: number[] = []
 
-          if (prevDrinks.length > 0) {
-            ingredients = [...prevDrinks[0].DrinkIngredients.map(ingred => ingred.ingredient)]
-            ids = [...prevDrinks.map(drink => drink.idDrink)]
-          }
+        if (prevDrinks.length > 0) {
+          ingredients = [...prevDrinks[0].DrinkIngredients.map(ingred => ingred.ingredient)]
+          ids = [...prevDrinks.map(drink => drink.idDrink)]
+        }
 
-          if (userRatedDrinks.length > 0) {
-            ingredients = [...ingredients, ...userRatedDrinks[0].DrinkIngredients.map(ingred => ingred.ingredient)]
-            ids = [...ids, ...userRatedDrinks.map(drink => drink.idDrink)]
-          }
+        if (userRatedDrinks.length > 0) {
+          ingredients = [...ingredients, ...userRatedDrinks[0].DrinkIngredients.map(ingred => ingred.ingredient)]
+          ids = [...ids, ...userRatedDrinks.map(drink => drink.idDrink)]
+        }
 
-          console.log(ids)
-          const { data, error } = await supabase.from("DrinkIngredients").select("id, drinks(*, DrinkIngredients(*))").in("ingredient", ingredients).not("idDrink", "in", `(${ids.join(",")})`).limit(10);
-          if (error) {
-            console.log("ERROR", error.message);
-          }
-          else {
-            let drinks: Drink[] = []
-            for(let i = 0; i < data.length; i++){
-              let drink: Drink | Drink[] = data[i].drinks
-              if(Array.isArray(drink)){
-                drink = drink[0]
-              }
-              drinks.push(drink)
+        console.log(ids)
+        const { data, error } = await supabase.from("DrinkIngredients").select("id, drinks(*, DrinkIngredients(*))").in("ingredient", ingredients).not("idDrink", "in", `(${ids.join(",")})`).limit(10);
+        if (error) {
+          console.log("ERROR", error.message);
+        }
+        else {
+          let drinks: Drink[] = []
+          for (let i = 0; i < data.length; i++) {
+            let drink: Drink | Drink[] = data[i].drinks
+            if (Array.isArray(drink)) {
+              drink = drink[0]
             }
-
-            if(drinks.length < 7) {
-              const { data: highRated, error } = await supabase.from("drinks").select("*, DrinkIngredients(*)").order("avg_rating", {ascending: false}).limit(5);
-              if (error) {
-                console.log("ERROR", error.message);
-              }
-              else {
-                drinks = [...drinks, ...highRated]
-              }
-            }
-
-            drinks.sort(ratingSort)
-            setDrinks(drinks);
+            drinks.push(drink)
           }
+
+          if (drinks.length < 7) {
+            const { data: highRated, error } = await supabase.from("drinks").select("*, DrinkIngredients(*)").order("avg_rating", { ascending: false }).limit(5);
+            if (error) {
+              console.log("ERROR", error.message);
+            }
+            else {
+              drinks = [...drinks, ...highRated]
+            }
+          }
+
+          drinks.sort(ratingSort)
+          setDrinks(drinks);
+        }
       }
 
 
     }
 
     const getUserRatedDrinks = async (user: User) => {
-   
+
       const { data: rated, error: ratedError } = await supabase
         .from('drink_ratings')
         .select('*, drinks(*, DrinkIngredients(*))')
@@ -151,18 +151,18 @@ const HomePage = () => {
 
       <section className='flex-1 flex flex-col gap-y-1.5'>
         <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>Drink Recommendations: </h2>
-          <ScrollArea className=' rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
-            <div className='md:p-6 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
-              {loading ? Array(SKELETON_CARDS).fill(0).map((_, index) => (
-                <CardSkeleton key={index} />
-              )) 
-              : 
+        <ScrollArea className=' rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
+          <div className='md:p-6 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
+            {loading ? Array(SKELETON_CARDS).fill(0).map((_, index) => (
+              <CardSkeleton key={index} />
+            ))
+              :
               drinks.map((drink, index) => (
-                  <DrinkCard {...drink} key={index} />
-                ))}
-            </div>
-            <ScrollBar orientation='horizontal' className='h-3' />
-          </ScrollArea>
+                <DrinkCard {...drink} key={index} />
+              ))}
+          </div>
+          <ScrollBar orientation='horizontal' className='h-3' />
+        </ScrollArea>
 
       </section>
 
@@ -173,9 +173,9 @@ const HomePage = () => {
             <div className='md:p-6 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
               {loading ? Array(SKELETON_CARDS).fill(0).map((_, index) => (
                 <CardSkeleton key={index} />
-              )) 
-              : 
-              prevViewedDrinks.map((drink, index) => (
+              ))
+                :
+                prevViewedDrinks.map((drink, index) => (
                   <DrinkCard {...drink} key={index} />
                 ))}
             </div>
@@ -192,9 +192,9 @@ const HomePage = () => {
             <div className='md:p-6 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
               {loading ? Array(SKELETON_CARDS).fill(0).map((_, index) => (
                 <CardSkeleton key={index} />
-              )) 
-              : 
-              ratedDrinks.map((drink, index) => (
+              ))
+                :
+                ratedDrinks.map((drink, index) => (
                   <DrinkCard {...drink} key={index} />
                 ))}
             </div>
