@@ -27,7 +27,7 @@ const RandomBev = () => {
                 let lastItemId = window.localStorage.getItem("lastItemId");
                 const today = new Date();
 
-                if (lastDate != null && today.toLocaleDateString() == lastDate){
+                if (lastDate !== null && today.toLocaleDateString() === lastDate){
                     const { data: lastDrink, error} = await supabase.from("drinks").select("*, DrinkIngredients(*)").eq("idDrink", lastItemId).single();
                     setDrink(lastDrink)
                     return;
