@@ -96,11 +96,11 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
 
 
   return (
-    <Card className="animate-fade-in md:min-w-[300px] md:max-w-4xl w-full border-orange-400 border-4 text-white h-full flex flex-col justify-between whitespace-wrap text-wrap">
-      <CardHeader className='w-full flex-1 flex justify-between items-center'>
-        <div className=''>
-          <CardTitle className='md:text-3xl text-lg'>{name}</CardTitle>
-          <CardDescription className='md:text-2xl text-lg'>{alcoholic}</CardDescription>
+    <Card className="animate-fade-in md:min-w-[300px] md:max-w-4xl w-full border-orange-400 border-3 text-white h-full flex flex-col justify-between whitespace-wrap text-wrap bg-gradient-to-b from-slate-700 to-slate-900 ">
+      <CardHeader className='w-full flex-1 flex sm:flex-row flex-col justify-between items-center'>
+        <div>
+          <CardTitle className='md:text-3xl text-xl'>{name}</CardTitle>
+          <CardDescription className='md:text-2xl text-lg sm:text-left text-center'>{alcoholic}</CardDescription>
         </div>
 
         {ratingCount === 0 ? (
@@ -139,7 +139,7 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
           <h2 className='md:text-4xl text-2xl font-semibold text-center'>Ingredients:</h2>
           <ul className={`flex flex-col gap-y-2 text-left `}>
             {DrinkIngredients.map((ingred, index) => (
-              <li className='md:text-3xl text-2xl' key={index}>{ingred.ingredient} - {ingred.measurement}</li>
+              <li className='md:text-3xl text-2xl' key={index}>{ingred.ingredient} {ingred.measurement === null ? "" : `- ${ingred.measurement}`}</li>
             ))}
           </ul>
         </div>
