@@ -6,10 +6,11 @@ import { Drink } from '@/types'
 import Image from 'next/image'
 import StarRating from './StarRating'
 import { supabase } from '@/lib/supabaseClient'
+import { images_path } from '@/lib/utils'
 
 
 
-const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions, image, tags, dateModified, DrinkIngredients, avg_rating, rating_count }: Drink) => {
+const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, image_url, last_modified, created_by, drink_ingredients, avg_rating, rating_count, created_date}: Drink) => {
   const [userRated, setUserRating] = useState<number>(-1);
   const [selectedRating, setSelectedRating] = useState<number>(-1);
   const [openDialog, setOpenDialog] = useState(false);
@@ -24,9 +25,9 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
       return
     }
 
-    console.log(user.id, idDrink);
+    console.log(user.id, id);
 
-    const { data, error } = await supabase.from("drink_ratings").select("rating").eq("user_id", user.id).eq('idDrink', idDrink).maybeSingle();
+    const { data, error } = await supabase.from("drink_ratings2").select("rating").eq("user_id", user.id).eq('drink_id', id).maybeSingle();
 
     if (data === null) {
       console.log("User has not rated this drink!")
@@ -46,21 +47,21 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
     if (confirmRating){
       const { data: { user } } = await supabase.auth.getUser();
 
-      console.log(user?.id, selectedRating, "Rated!", idDrink)
+      console.log(user?.id, selectedRating, "Rated!", id)
 
       console.log({
         user_id: user?.id,
-        idDrink,
+        id,
         rating: selectedRating
       })
 
       let rating = {
         user_id: user?.id,
-        idDrink: idDrink,
+        drink_id: id,
         rating: selectedRating
       }
 
-      const { data, error } = await supabase.from("drink_ratings").upsert(rating, { onConflict: 'user_id, idDrink' });
+      const { data, error } = await supabase.from("drink_ratings2").upsert(rating, { onConflict: 'user_id, drink_id' });
 
       console.log(data, error)
       setUserRating(selectedRating)
@@ -73,7 +74,7 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
   }
 
   const updateRatingAvgCount = async () => {
-    const { data: rating, error} = await supabase.from("drinks").select("avg_rating, rating_count").eq("idDrink", idDrink).single();
+    const { data: rating, error} = await supabase.from("drinks2").select("avg_rating, rating_count").eq("id", id).single();
 
     if (error) {
       console.log(error)
@@ -94,13 +95,14 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
     displayUserRating()
   }, [])
 
+  console.log(avg_rating, rating_count)
 
   return (
     <Card className="animate-fade-in md:min-w-[300px] md:max-w-4xl w-full border-orange-400 border-3 text-white h-full flex flex-col justify-between whitespace-wrap text-wrap bg-gradient-to-b from-slate-700 to-slate-900 ">
       <CardHeader className='w-full flex-1 flex sm:flex-row flex-col justify-between items-center'>
         <div>
           <CardTitle className='md:text-3xl text-xl'>{name}</CardTitle>
-          <CardDescription className='md:text-2xl text-lg sm:text-left text-center'>{alcoholic}</CardDescription>
+          <CardDescription className='md:text-2xl text-lg sm:text-left text-center'>{alcoholic === "Yes" ? "Alcoholic" : "Non-Alcoholic"}</CardDescription>
         </div>
 
         {ratingCount === 0 ? (
@@ -121,7 +123,7 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
 
       <CardContent className='flex lg:flex-row flex-col justify-center items-center gap-y-5'>
         <div className='flex flex-col gap-y-5'>
-          <Image priority className='rounded-md' src={`/cocktail_images/${idDrink}.jpg`} alt={name} width={360} height={360} />
+          <Image priority className='rounded-md' src={`${images_path}${image_url}`} alt={name} width={360} height={360} />
           {userRated != -1 ? (
             <div className='flex flex-col justify-center items-center gap-y-2'>
               <h3 className='text-center text-2xl font-bold'>Your Rating: {userRated} Stars</h3>
@@ -135,32 +137,17 @@ const DrinkFullView = ({ idDrink, name, category, alcoholic, glass, instructions
             </div>)
           }
         </div>
-        <div className={`flex-1 flex flex-col items-center justify-start gap-y-3 ${DrinkIngredients.length <= 5 && 'md:py-10 md:pt-0 pt-8'}`}>
+        <div className={`flex-1 flex flex-col items-center justify-start gap-y-3 ${drink_ingredients.length <= 5 && 'md:py-10 md:pt-0 pt-8'}`}>
           <h2 className='md:text-4xl text-2xl font-semibold text-center'>Ingredients:</h2>
           <ul className={`flex flex-col gap-y-2 text-left `}>
-            {DrinkIngredients.map((ingred, index) => (
-              <li className='md:text-3xl text-2xl' key={index}>{ingred.ingredient} {ingred.measurement === null ? "" : `- ${ingred.measurement}`}</li>
+            {drink_ingredients.map((ingred, index) => (
+              <li className='md:text-3xl text-2xl' key={index}>{ingred.ingredient} {ingred.quantity === 0 ? "" : `- ${ingred.quantity}`} {ingred.unit === "" ? "" : ingred.unit} {ingred.details === "" ? "" : `- ${ingred.details}`}</li>
             ))}
           </ul>
         </div>
       </CardContent>
 
       <CardFooter className='flex flex-col gap-y-3'>
-        <div className='flex flex-wrap justify-center items-center text-black gap-x-3'>
-          <span className="bg-white p-2 text-lg rounded-md">{category}</span>
-          <span className="bg-white p-2 text-lg rounded-md">{glass}</span>
-          {tags.split(",").map((tag, index) => {
-
-            if (tag == "") {
-              return;
-            }
-
-            return (
-              <span className="bg-white p-2 text-lg rounded-md" key={index}>{tag}</span>
-            )
-          })}
-        </div>
-
         <CardDescription className='self-start px-2 text-2xl text-left'>
           <h2 className='text-3xl font-semibold text-left'>Instructions:</h2>
           {instructions.split(".").map((sentence, index) => {
