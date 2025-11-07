@@ -93,8 +93,8 @@ const Browse = () => {
   useEffect(() => {
     const fetchTotalPages = async () => {
       const { count, error } = await supabase
-        .from('drinks')
-        .select('*, DrinkIngredients(*)', { count: 'exact', head: true }).ilike("name", `%${searchParam}%`);
+        .from('drinks2')
+        .select('*, drink_ingredients(*)', { count: 'exact', head: true }).ilike("name", `%${searchParam}%`);
 
       if (error) {
         console.error('Error fetching count:', error.message);
@@ -116,7 +116,7 @@ const Browse = () => {
       setLoading(true)
       const start = (page - 1) * LIMIT
       const end = start + LIMIT - 1
-      const { data, error } = await supabase.from("drinks").select("*, DrinkIngredients(*)").ilike("name", `%${searchParam}%`).range(start, end);
+      const { data, error } = await supabase.from("drinks2").select("*, drink_ingredients(*)").ilike("name", `%${searchParam}%`).range(start, end);
 
       if (error) {
         console.log("Error:", error.message);
@@ -150,7 +150,7 @@ const Browse = () => {
 
       {!loading && searchParam !== "" ? drinkList.length === 0 ? (
         <h1 className='md:text-left text-center md:text-3xl text-xl text-blue-300 font-bold'>No Drinks Found!</h1>
-      ) : (<h1 className='md:text-left text-center md:text-3xl text-xl text-blue-300 font-bold'>Drink Results:</h1>) : <></>}
+      ) : (<h1 className='md:text-left text-center md:text-3xl text-xl text-blue-300 font-bold'>'{searchParam}' Drink Results:</h1>) : <></>}
 
       {/* Drink List */}
       <div className='flex-1 flex flex-wrap justify-center items-center gap-8'>
