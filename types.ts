@@ -5,24 +5,26 @@ type FormData = {
 }
 
 type Ingredient = {
-  idDrink: number,
-  id: number,
+  drink_id: number,
   ingredient: string,
-  IngredientNumber: number,
-  measurement: string,
+  number: number,
+  quantity: number,
+  unit: string,
+  details: string,
 }
 
 type Drink = {
-  idDrink: number,
+  id: number,
   name: string,
   category: string,
   alcoholic: string,
   glass: string,
   instructions: string,
-  image: string,
-  tags: string,
-  dateModified: string,
-  DrinkIngredients: Ingredient[],
+  image_url: string,
+  last_modified: string,
+  created_date: string,
+  created_by: string,
+  drink_ingredients: Ingredient[],
   avg_rating: number,
   rating_count: number
 }
