@@ -26,7 +26,6 @@ const HomePage = () => {
     if (a.avg_rating > b.avg_rating) {
       return -1
     }
-
     return 1
   }
 
@@ -40,7 +39,7 @@ const HomePage = () => {
       }
 
 
-      let prevDrinks = getLastViewed()
+      let prevDrinks = await getLastViewed()
 
       let userRatedDrinks = await getUserRatedDrinks(user)
 
@@ -55,8 +54,8 @@ const HomePage = () => {
       // If user has no previous viewed drinks or has not rated any drinks, recommend the top rated
       // else, using the most recently viewed drink and one of the rated drinks, retrieve 10 drinks with similar ingredients
       // if the number of recommended drinks is less than 7, append the 5 top rated drinks
-      if (!prevDrinks && !userRatedDrinks) {
-        const { data, error } = await supabase.from("drinks").select("*, DrinkIngredients(*)").order("avg_rating", { ascending: false }).limit(10);
+      if (prevDrinks.length === 0 && userRatedDrinks.length === 0) {
+        const { data, error } = await supabase.from("drinks2").select("*, drink_ingredients(*)").order("avg_rating", { ascending: false }).limit(10);
         if (error) {
           console.log("ERROR", error.message);
         }
@@ -68,24 +67,24 @@ const HomePage = () => {
         let ids: number[] = []
 
         if (prevDrinks.length > 0) {
-          ingredients = [...prevDrinks[0].DrinkIngredients.map(ingred => ingred.ingredient)]
-          ids = [...prevDrinks.map(drink => drink.idDrink)]
+          ingredients = [...prevDrinks[0].drink_ingredients.map(ingred => ingred.ingredient)]
+          ids = [...prevDrinks.map(drink => drink.id)]
         }
 
         if (userRatedDrinks.length > 0) {
-          ingredients = [...ingredients, ...userRatedDrinks[0].DrinkIngredients.map(ingred => ingred.ingredient)]
-          ids = [...ids, ...userRatedDrinks.map(drink => drink.idDrink)]
+          ingredients = [...ingredients, ...userRatedDrinks[0].drink_ingredients.map(ingred => ingred.ingredient)]
+          ids = [...ids, ...userRatedDrinks.map(drink => drink.id)]
         }
 
         console.log(ids)
-        const { data, error } = await supabase.from("DrinkIngredients").select("id, drinks(*, DrinkIngredients(*))").in("ingredient", ingredients).not("idDrink", "in", `(${ids.join(",")})`).limit(10);
+        const { data, error } = await supabase.from("drink_ingredients").select("drink_id, drinks2(*, drink_ingredients(*))").in("ingredient", ingredients).not("drink_id", "in", `(${ids.join(",")})`).limit(10);
         if (error) {
           console.log("ERROR", error.message);
         }
         else {
           let drinks: Drink[] = []
           for (let i = 0; i < data.length; i++) {
-            let drink: Drink | Drink[] = data[i].drinks
+            let drink: Drink | Drink[] = data[i].drinks2
             if (Array.isArray(drink)) {
               drink = drink[0]
             }
@@ -93,7 +92,7 @@ const HomePage = () => {
           }
 
           if (drinks.length < 7) {
-            const { data: highRated, error } = await supabase.from("drinks").select("*, DrinkIngredients(*)").order("avg_rating", { ascending: false }).limit(5);
+            const { data: highRated, error } = await supabase.from("drinks2").select("*, drink_ingredients(*)").order("avg_rating", { ascending: false }).limit(5);
             if (error) {
               console.log("ERROR", error.message);
             }
@@ -113,14 +112,15 @@ const HomePage = () => {
     const getUserRatedDrinks = async (user: User) => {
 
       const { data: rated, error: ratedError } = await supabase
-        .from('drink_ratings')
-        .select('*, drinks(*, DrinkIngredients(*))')
+        .from('drink_ratings2')
+        .select('*, drinks2(*, drink_ingredients(*))')
         .eq('user_id', user.id);
 
       if (ratedError) {
         console.error('Error fetching rated drinks:', ratedError);
       } else {
-        const drinks = rated.map(r => r.drinks);
+        const drinks = rated.map(r => r.drinks2);
+        console.log(drinks)
         setRatedDrinks(drinks)
         return drinks
       }
@@ -128,12 +128,25 @@ const HomePage = () => {
       return []
     }
 
-    const getLastViewed = () => {
+    const getLastViewed = async () => {
       const stored = window.localStorage.getItem("lastViewed")
-      if (stored !== null) {
-        const prev = JSON.parse(stored)
-        setPrevViewedDrinks(prev)
-        return prev
+      if (stored !== null && stored.length > 0) {
+        const prevIDs: number[] = JSON.parse(stored)
+
+        const { data, error } = await supabase.from("drinks2").select("*, drink_ingredients(*)").in("id", prevIDs);
+        if (error) {
+          console.log(error);
+          return []
+        }
+
+        console.log(data)
+
+        const sorted = data.sort(
+          (a, b) => prevIDs.indexOf(a.id) - prevIDs.indexOf(b.id)
+        );
+
+        setPrevViewedDrinks(sorted)
+        return sorted
       }
 
       return []
@@ -143,6 +156,9 @@ const HomePage = () => {
 
   }, [])
 
+  if(!loading){
+    console.log(drinks)
+  }
 
   return (
     <div className='flex-1 flex flex-col gap-y-9 px-5'>
@@ -151,7 +167,9 @@ const HomePage = () => {
 
       <section className='flex-1 flex flex-col gap-y-1.5'>
         <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>Drink Recommendations: </h2>
-        <ScrollArea className=' rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
+        <ScrollArea className=' rounded-2xl border-transparent bg-clip-padding
+            bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
+            bg-origin-border whitespace-nowrap'>
           <div className='md:p-6 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
             {loading ? Array(SKELETON_CARDS).fill(0).map((_, index) => (
               <CardSkeleton key={index} />
@@ -166,10 +184,12 @@ const HomePage = () => {
 
       </section>
 
-      {(loading || prevViewedDrinks.length != 0) &&
+      {(loading || prevViewedDrinks.length !== 0) &&
         <section className='flex-1 flex flex-col gap-y-1.5'>
           <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>Previously Viewed:</h2>
-          <ScrollArea className='w-full rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
+          <ScrollArea className='w-full rounded-2xl whitespace-nowrap border-transparent bg-clip-padding
+            bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
+            bg-origin-border'>
             <div className='md:p-6 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
               {loading ? Array(SKELETON_CARDS).fill(0).map((_, index) => (
                 <CardSkeleton key={index} />
@@ -185,10 +205,12 @@ const HomePage = () => {
       }
 
 
-      {(loading || ratedDrinks.length != 0) &&
+      {(loading || ratedDrinks.length !== 0) &&
         <section className='flex-1 flex flex-col gap-y-1.5'>
           <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>Drinks rated by me:</h2>
-          <ScrollArea className='w-full rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
+          <ScrollArea className='w-full rounded-2xl whitespace-nowrap border-transparent bg-clip-padding
+            bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
+            bg-origin-border'>
             <div className='md:p-6 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
               {loading ? Array(SKELETON_CARDS).fill(0).map((_, index) => (
                 <CardSkeleton key={index} />
