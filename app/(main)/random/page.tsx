@@ -27,29 +27,34 @@ const RandomBev = () => {
                 let lastItemId = window.localStorage.getItem("lastItemId");
                 const today = new Date();
 
-                if (lastDate !== null && today.toLocaleDateString() === lastDate){
-                    const { data: lastDrink, error} = await supabase.from("drinks").select("*, DrinkIngredients(*)").eq("idDrink", lastItemId).single();
-                    setDrink(lastDrink)
-                    return;
+                if (lastDate !== null && lastItemId !== null && today.toLocaleDateString() === lastDate){
+                    const { data: lastDrink, error} = await supabase.from("drinks2").select("*, drink_ingredients(*)").eq("id", lastItemId).single();
+                    if (error) {
+                        console.log(error)
+                    }
+                    else {
+                        setDrink(lastDrink)
+                        return;
+                    }
                 }
 
-                const { data: ids } = await supabase.from('drinks').select('idDrink');
+                const { data: ids } = await supabase.from('drinks2').select('id');
                 if (ids === null){
                     throw new Error("No Ids retrieved!")
                 }
                 let availableIds = [];
                 if (lastItemId != null) {
-                    availableIds = ids.filter(i => i.idDrink !== lastItemId);
+                    availableIds = ids.filter(i => i.id !== lastItemId);
                 }
                 else {
-                    availableIds = [...ids]
+                    availableIds = [...ids] 
                 }
                 
-                const randomId = availableIds[Math.floor(Math.random() * availableIds.length)].idDrink;
+                const randomId = availableIds[Math.floor(Math.random() * availableIds.length)].id;
                 window.localStorage.setItem("lastItemId", randomId);
                 window.localStorage.setItem("lastVisitDate", today.toLocaleDateString());
 
-                const { data, error } = await supabase.from("drinks").select("*, DrinkIngredients(*)").eq("idDrink", randomId).single();
+                const { data, error } = await supabase.from("drinks2").select("*, drink_ingredients(*)").eq("id", randomId).single();
 
                 if (error) {
                     console.log("Random: Error-", error.message);
