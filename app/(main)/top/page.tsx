@@ -36,7 +36,7 @@ const TopRatedDrinks = () => {
     const sections: DrinkSection[] = [];
     let section: DrinkSection;
 
-    const { data: topRated, error: topRatedError } = await supabase.from("drinks").select("*, DrinkIngredients(*)").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+    const { data: topRated, error: topRatedError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
     if (topRatedError) {
       console.log(topRatedError)
     }
@@ -48,15 +48,15 @@ const TopRatedDrinks = () => {
       sections.push(section)
     }
 
-    const { data: tequilaIds, error: tequilaIdsError } = await supabase.from("DrinkIngredients").select("idDrink").ilike("ingredient", "Tequila")
+    const { data: tequilaIds, error: tequilaIdsError } = await supabase.from("drink_ingredients").select("drink_id").ilike("ingredient", "Tequila")
 
     if (tequilaIdsError) {
       console.log(tequilaIdsError)
     }
 
     else {
-      let ids = tequilaIds.map(drink => drink.idDrink)
-      const { data: tequilaDrinks, error: tequilaDrinksError } = await supabase.from("drinks").select("*, DrinkIngredients(*)").filter("idDrink", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+      let ids = tequilaIds.map(drink => drink.drink_id)
+      const { data: tequilaDrinks, error: tequilaDrinksError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
       if (tequilaDrinksError) {
         console.log(tequilaDrinksError)
       }
@@ -70,15 +70,15 @@ const TopRatedDrinks = () => {
       }
     }
 
-    const { data: vodkaIds, error: vodkaIdsError } = await supabase.from("DrinkIngredients").select("idDrink").ilike("ingredient", "Vodka")
+    const { data: vodkaIds, error: vodkaIdsError } = await supabase.from("drink_ingredients").select("drink_id").ilike("ingredient", "Vodka")
 
     if (vodkaIdsError) {
       console.log(vodkaIdsError)
     }
 
     else {
-      let ids = vodkaIds.map(drink => drink.idDrink)
-      const { data: vodkaDrinks, error: vodkaDrinksError } = await supabase.from("drinks").select("*, DrinkIngredients(*)").filter("idDrink", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+      let ids = vodkaIds.map(drink => drink.drink_id)
+      const { data: vodkaDrinks, error: vodkaDrinksError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
       if (vodkaDrinksError) {
         console.log(vodkaDrinksError)
       }
@@ -92,15 +92,15 @@ const TopRatedDrinks = () => {
       }
     }
 
-    const { data: whiskeyIds, error: whiskeyIdsError } = await supabase.from("DrinkIngredients").select("idDrink").filter("ingredient", "in", `(${whiskeyIngredients.join(",")})`)
+    const { data: whiskeyIds, error: whiskeyIdsError } = await supabase.from("drink_ingredients").select("drink_id").filter("ingredient", "in", `(${whiskeyIngredients.join(",")})`)
 
     if (whiskeyIdsError) {
       console.log(whiskeyIdsError)
     }
 
     else {
-      let ids = whiskeyIds.map(drink => drink.idDrink)
-      const { data: whiskeyDrinks, error: whiskeyDrinksError } = await supabase.from("drinks").select("*, DrinkIngredients(*)").filter("idDrink", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+      let ids = whiskeyIds.map(drink => drink.drink_id)
+      const { data: whiskeyDrinks, error: whiskeyDrinksError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
       if (whiskeyDrinksError) {
         console.log(whiskeyDrinksError)
       }
@@ -114,15 +114,15 @@ const TopRatedDrinks = () => {
       }
     }
 
-    const { data: rumIds, error: rumIdsError } = await supabase.from("DrinkIngredients").select("idDrink").filter("ingredient", "in", `(${rumIngredients.join(",")})`)
+    const { data: rumIds, error: rumIdsError } = await supabase.from("drink_ingredients").select("drink_id").filter("ingredient", "in", `(${rumIngredients.join(",")})`)
 
     if (rumIdsError) {
       console.log(rumIdsError)
     }
 
     else {
-      let ids = rumIds.map(drink => drink.idDrink)
-      const { data: rumDrinks, error: rumDrinksError } = await supabase.from("drinks").select("*, DrinkIngredients(*)").filter("idDrink", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+      let ids = rumIds.map(drink => drink.drink_id)
+      const { data: rumDrinks, error: rumDrinksError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
       if (rumDrinksError) {
         console.log(rumDrinksError)
       }
@@ -136,15 +136,15 @@ const TopRatedDrinks = () => {
       }
     }
 
-    const { data: ginIds, error: ginIdsError } = await supabase.from("DrinkIngredients").select("idDrink").ilike("ingredient", "Gin")
+    const { data: ginIds, error: ginIdsError } = await supabase.from("drink_ingredients").select("drink_id").ilike("ingredient", "Gin")
 
     if (ginIdsError) {
       console.log(ginIdsError)
     }
 
     else {
-      let ids = ginIds.map(drink => drink.idDrink)
-      const { data: ginDrinks, error: ginDrinksError } = await supabase.from("drinks").select("*, DrinkIngredients(*)").filter("idDrink", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+      let ids = ginIds.map(drink => drink.drink_id)
+      const { data: ginDrinks, error: ginDrinksError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
       if (ginDrinksError) {
         console.log(ginDrinksError)
       }
@@ -158,7 +158,7 @@ const TopRatedDrinks = () => {
       }
     }
 
-    const { data: coffeeTeaDrinks, error: coffeeTeaError } = await supabase.from("drinks").select("*, DrinkIngredients(*)").eq("category", "Coffee / Tea").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+    const { data: coffeeTeaDrinks, error: coffeeTeaError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").eq("category", "Coffee / Tea").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
     if (coffeeTeaError) {
       console.log(coffeeTeaError)
     }
@@ -170,7 +170,7 @@ const TopRatedDrinks = () => {
       sections.push(section)
     }
 
-    const { data: nonAlcoDrinks, error: nonAlcoError } = await supabase.from("drinks").select("*, DrinkIngredients(*)").ilike("alcoholic", "Non alcoholic").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+    const { data: nonAlcoDrinks, error: nonAlcoError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").ilike("alcoholic", "No").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
     if (nonAlcoError) {
       console.log(nonAlcoError)
     }
@@ -200,7 +200,9 @@ const TopRatedDrinks = () => {
           <div className='flex md:justify-start md:items-start justify-center items-center'>
             <Skeleton className='w-[200px] h-5 rounded-lg' />
           </div>
-          <ScrollArea className=' rounded-2xl border-4 border-orange-400 whitespace-nowrap'>
+          <ScrollArea className=' rounded-2xl border-transparent bg-clip-padding
+            bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
+            bg-origin-border whitespace-nowrap'>
             <div className='md:p-6 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
               {Array(SKELETON_CARDS).fill(0).map((_, index) => (
                 <CardSkeleton key={index} />
@@ -224,7 +226,9 @@ const TopRatedDrinks = () => {
       {drinkSections.map((section, index) => (
         <section key={section.title + index} className='flex-1 flex flex-col md:gap-y-2 gap-y-1.5'>
           <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>{section.title}</h2>
-          <ScrollArea className='rounded-xl border-3 border-orange-400 whitespace-nowrap'>
+          <ScrollArea className='rounded-xl border-transparent bg-clip-padding
+            bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
+            bg-origin-border whitespace-nowrap'>
             <div className='md:p-4 p-3 flex items-center space-x-6 overflow-x-auto scroll-smooth'>
               {section.data.map((drink, index) => (
                 <DrinkCard {...drink} key={index} />
