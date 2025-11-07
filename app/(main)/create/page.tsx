@@ -1,5 +1,4 @@
 'use client';
-import { Drink } from '@/types';
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -28,28 +27,29 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { supabase } from '@/lib/supabaseClient';
 
 interface Measurement {
     name: string,
-    quantity: number | null,
-    unit: string | null,
-    details: string | null,
+    quantity: number,
+    unit: string,
+    details: string,
 }
 
 const Create = () => {
-
     const [name, setName] = useState<string>("");
     const [category, setCategory] = useState<string>("");
-    const [alcoholic, setAlcoholic] = useState<string>("Alcoholic");
-    const [glass, setGlass] = useState<string>();
-    const [instructions, setInstructions] = useState<string>();
+    const [alcoholic, setAlcoholic] = useState<string>("Yes");
+    const [glass, setGlass] = useState<string>("");
+    const [instructions, setInstructions] = useState<string>("");
     const [ingredients, setIngredients] = useState<Measurement[]>([]);
     const [ingredientName, setIngredientName] = useState<string>("");
     const [quantity, setQuantity] = useState<number>(0);
     const [unit, setUnit] = useState<string>("");
     const [details, setDetails] = useState<string>("");
-    const [image, setImage] = useState<File | null>();
+    const [image, setImage] = useState<File | null | undefined>(null);
     const [open, setOpen] = useState<boolean>(false);
+    const [userID, setUserID] = useState<string>("");
 
     const units = ["bottle",
         "can",
@@ -177,10 +177,19 @@ const Create = () => {
         { label: "Baijiu", value: "Baijiu" },]
 
 
+    const checkUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+            toast.warning("Must create an account to create drinks!")
+            return
+        }
+
+        setUserID(user.id);
+    }
+
     const handleIngredientAdded = () => {
-
         const found = ingreds.find(item => item.value === ingredientName);
-
 
         if (found === undefined) {
             toast.error("Error", {
@@ -196,6 +205,8 @@ const Create = () => {
             unit: unit,
             details: details
         }
+
+        console.log(measurement);
 
         setIngredients(prev => [...prev, measurement])
         setIngredientName("")
@@ -214,6 +225,89 @@ const Create = () => {
         setIngredients(prev => prev.filter((_, i) => i !== index))
     }
 
+    const handleDrinkForm = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if(image === null){
+            toast.error("Error", {
+                description: "Make sure to fill out all required fields.",
+            })
+        }
+        if (ingredients.length < 2) {
+            toast.error("Error", {
+                description: "You must add at least 2 ingredients!",
+            })
+
+            return;
+        }
+
+        const image_name = `${crypto.randomUUID()}-${image!.name}`
+        const image_path = `drink_images/${image_name}`
+
+
+        const { data: image_data, error: imageError } = await supabase.storage.from("drink_images").upload(image_name, image!, {
+            cacheControl: '3600',
+            upsert: false,
+        });
+
+        if (imageError){
+            console.log(imageError);
+            return;
+        }
+
+        console.log(image_data)
+
+        const drink = {
+            name,
+            category,
+            alcoholic,
+            glass,
+            image_url: image_path,
+            instructions,
+        }
+        
+        console.log("Inserting the infomation");
+        console.log(drink)
+        console.log(ingredients)
+
+        const { data: drinkData, error: drinkError } = await supabase.rpc("insert_new_drink", {
+            drink_data: drink,
+            ingredients_data: ingredients,
+        })
+
+        if (drinkError) {
+            console.log(drinkError);
+            toast.error(drinkError.message)
+            return;
+        }
+
+        console.log(drinkData);
+
+
+        setName("")
+        setAlcoholic("")
+        setCategory("")
+        setGlass("")
+        setImage(null)
+        setInstructions("")
+
+        // Ingredients States
+        setIngredients([])
+        setIngredientName("")
+        setQuantity(0)
+        setUnit("")
+        setDetails("")
+
+        toast.success("Success!", {
+            description: "Your drink was created!"
+        })
+
+    }
+
+
+    useEffect(() => {
+        checkUser()
+    }, [])
+
 
     return (
         <div className='flex flex-col justify-center items-center gap-5 text-orange-400'>
@@ -223,7 +317,7 @@ const Create = () => {
             </div>
 
             <Card className='border-2 p-5 bg-slate-800'>
-                <form className='xl:w-[1150px] md:w-[600px] w-full flex flex-col justify-center items-center gap-8'>
+                <form className='xl:w-[1150px] md:w-[600px] w-full flex flex-col justify-center items-center gap-8' onSubmit={handleDrinkForm}>
                     <FieldGroup className='flex flex-row'>
                         <Field className='flex-2'>
                             <FieldLabel htmlFor='name' className='sm:text-xl'>Drink Name*</FieldLabel>
@@ -231,7 +325,7 @@ const Create = () => {
                                 type="text" placeholder="Screwdriver..." required
                                 onChange={(e) => setName(e.target.value)}
                                 value={name}
-                                minLength={5}
+                                minLength={3}
                             />
                         </Field>
 
@@ -249,13 +343,13 @@ const Create = () => {
                     <FieldGroup className='flex flex-row'>
                         <Field className='flex-1/2'>
                             <FieldLabel className='sm:text-xl'>Contains Alcohol?*</FieldLabel>
-                            <Select defaultValue='Alcoholic' value={alcoholic} onValueChange={setAlcoholic} required>
+                            <Select defaultValue='Yes' value={alcoholic} onValueChange={setAlcoholic} required>
                                 <SelectTrigger className='bg-slate-900 text-lg'>
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className=' bg-slate-900 text-orange-400'>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Alcoholic'>Yes</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Non alcoholic'>No</SelectItem>
+                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Yes'>Yes</SelectItem>
+                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='No'>No</SelectItem>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Optional'>Optional</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -270,14 +364,15 @@ const Create = () => {
                                 <SelectContent className=' bg-slate-900 text-orange-400'>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Beer'>Beer</SelectItem>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Cocktail'>Cocktail</SelectItem>
+                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Cocoa'>Cocoa</SelectItem>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Coffee / Tea'>Coffee / Tea</SelectItem>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Homemade Liqueur'>Homemade Liqueur</SelectItem>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Ordinary Drink'>Ordinary Drink</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Punch / Party Drink'>Punch / Party Drink</SelectItem>
+                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Party Drink'>Punch / Party Drink</SelectItem>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Shake'>Shake</SelectItem>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Shot'>Shot</SelectItem>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Soft Drink'>Soft Drink</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Other / Unknown'>Other / Unknown</SelectItem>
+                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Other'>Other</SelectItem>
                                 </SelectContent>
                             </Select>
                         </Field>
@@ -357,7 +452,7 @@ const Create = () => {
                                 <PopoverContent className="w-[--radix-popover-trigger-width] min-w-[var(--radix-popover-trigger-width)] p-0 bg-slate-900 text-orange-400">
                                     <Command>
                                         <CommandInput name='ingredient' placeholder="Search Ingredient..." className="sm:text-lg h-9 text-orange-400" />
-                                        <CommandList>
+                                        <CommandList> 
                                             <CommandEmpty className='flex justify-start items-center sm:text-lg p-3'>No Ingredient Found</CommandEmpty>
                                             <CommandGroup>
                                                 {ingreds.map((ingredient, index) => (
@@ -388,13 +483,13 @@ const Create = () => {
 
                         <Field className='flex-1/6'>
                             <FieldLabel htmlFor='quantity' className='sm:text-xl'>Quantity</FieldLabel>
-                            <Input required name='quantity' value={quantity} type='number' onChange={(e) => setQuantity(Number(e.target.value))}
+                            <Input name='quantity' value={quantity} type='number' onChange={(e) => setQuantity(Number(e.target.value))}
                                 className="bg-slate-900 border-gray-700 text-orange-400 focus:border-orange-400 focus:ring-orange-400 placeholder:text-gray-500 placeholder:text-lg md:text-lg" />
                         </Field>
 
                         <Field className='flex-1/6'>
                             <FieldLabel className='sm:text-xl'>Unit</FieldLabel>
-                            <Select value={unit} onValueChange={setUnit} required>
+                            <Select value={unit} onValueChange={setUnit}>
                                 <SelectTrigger className='bg-slate-900 text-lg'>
                                     <SelectValue placeholder="Enter Unit"></SelectValue>
                                 </SelectTrigger>
@@ -406,7 +501,7 @@ const Create = () => {
 
                         <Field className='flex-1/3'>
                             <FieldLabel htmlFor='details' className='sm:text-xl'>Details</FieldLabel>
-                            <Input required name='details' type='text' onChange={(e) => setDetails(e.target.value)}
+                            <Input name='details' type='text' onChange={(e) => setDetails(e.target.value)}
                                 className="bg-slate-900 border-gray-700 text-orange-400 focus:border-orange-400 focus:ring-orange-400 placeholder:text-gray-500 placeholder:text-lg md:text-lg" />
                         </Field>
 
@@ -418,8 +513,7 @@ const Create = () => {
                         <FieldLabel htmlFor='instructions' className='sm:text-xl'>Instructions*</FieldLabel>
                         <Textarea name='instructions' className='bg-slate-900 md:text-xl placeholder:text-lg min-h-[200px]'
                             value={instructions} onChange={(e) => setInstructions(e.target.value)}
-                            placeholder='Type instructions in here...'
-                            required
+                            placeholder='Type instructions in here...' minLength={5}
                         />
                     </Field>
 
