@@ -1,24 +1,21 @@
 import { Card, CardDescription, CardHeader, CardTitle, CardAction, CardContent, CardFooter } from './ui/card'
-import { Button } from './ui/button'
 import { Drink } from '@/types'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 const MAX_PREV_DRINKS_STORED = 7
 
-const DrinkCard = ({ idDrink, name, category, alcoholic, glass, instructions, image, tags, dateModified, DrinkIngredients, avg_rating, rating_count }: Drink) => {
+const DrinkCard = ({ id, name, category, alcoholic, glass, instructions, image_url, last_modified, created_by, drink_ingredients, avg_rating, rating_count, created_date}: Drink) => {
 
   const router = useRouter();
 
   const handleNav = () => {
     const stored = window.localStorage.getItem("lastViewed")
-    const drink = {idDrink, name, category, alcoholic, glass, instructions, image, tags, dateModified, DrinkIngredients, avg_rating, rating_count}
+    let prevViewed: number[] = stored ? JSON.parse(stored) : []
 
-    let prevViewed: Drink[] = stored ? JSON.parse(stored) : []
+    prevViewed = prevViewed.filter((value) => value != id)
 
-    prevViewed = prevViewed.filter((value) => value.idDrink != drink.idDrink)
-
-    prevViewed.unshift(drink)
+    prevViewed.unshift(id)
 
     if (prevViewed.length > MAX_PREV_DRINKS_STORED) {
       prevViewed.pop()
@@ -26,21 +23,21 @@ const DrinkCard = ({ idDrink, name, category, alcoholic, glass, instructions, im
 
     window.localStorage.setItem("lastViewed", JSON.stringify(prevViewed));
 
-    router.push(`/drink/${idDrink}`)
+    router.push(`/drink/${id}`)
   }
 
 
   return (
-    <Card onClick={handleNav} className="animate-fade-in hover:cursor-pointer xl:w-[325px] md:w-[300px] w-[275px] border-gray-300 border-4 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap bg-gradient-to-b from-slate-700 to-slate-900">
+    <Card onClick={handleNav} className="animate-fade-in hover:cursor-pointer xl:w-[325px] md:w-[300px] w-[275px] border-gray-300 border-2 text-white hover:border-blue-400 h-full flex flex-col justify-between whitespace-wrap text-wrap bg-gradient-to-b from-slate-700 to-slate-900">
       <CardHeader>
         <div className='w-[65%] flex flex-col justify-center '>
         <CardTitle className='text-lg whitespace-nowrap overflow-hidden overflow-ellipsis'>{name}</CardTitle>
-        <CardDescription className='text-[16px]'>{alcoholic}</CardDescription>
+        <CardDescription className='text-[16px]'>{alcoholic === "Yes" ? "Alcoholic" : "Non-Alcoholic"}</CardDescription>
         </div>
         <CardAction className='flex justify-center items-centerhover:cursor-pointer xl:text-[16px] text-sm'>View More</CardAction>
       </CardHeader>
       <CardContent className='flex justify-center items-center'>
-        <Image className='rounded-sm' priority src={`/cocktail_images/${idDrink}.jpg`} alt={name} width={300} height={300} />
+        <Image className='rounded-sm' priority src={`http://localhost:8000/storage/v1/object/public/${image_url}`} alt={name} width={300} height={300} />
       </CardContent>
       <CardFooter className='flex flex-col md:gap-y-2 gay-y-1'>
         <p className='md:text-xl text-md font-semibold'>{category}</p>
