@@ -18,7 +18,7 @@ const DrinkPage = () => {
     useEffect(() => {
 
         const getDrinkInfo = async () => {
-            const { data, error }  = await supabase.from("drinks").select("*, DrinkIngredients(*)").eq("idDrink", id).single();
+            const { data, error }  = await supabase.from("drinks2").select("*, drink_ingredients(*)").eq("id", id).single();
 
             if (error){
                 console.log(error)
@@ -46,7 +46,7 @@ const DrinkPage = () => {
   return (
     <div className="flex-1 flex justify-center items-center">
         {drink !== null ? <DrinkFullView {...drink} /> : (
-            <Loading message="ERRROR" />
+            <Loading message="ERRROR. This Drink was deleted...." />
         )}
     </div>
   )
