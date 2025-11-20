@@ -28,13 +28,9 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { supabase } from '@/lib/supabaseClient';
-
-interface Measurement {
-    name: string,
-    quantity: number,
-    unit: string,
-    details: string,
-}
+import { ingreds, units, glasses } from "../../../constants";
+import IngredientRow from '@/components/IngredientRow';
+import { Measurement } from '@/types';
 
 const Create = () => {
     const [name, setName] = useState<string>("");
@@ -42,139 +38,12 @@ const Create = () => {
     const [alcoholic, setAlcoholic] = useState<string>("Yes");
     const [glass, setGlass] = useState<string>("");
     const [instructions, setInstructions] = useState<string>("");
-    const [ingredients, setIngredients] = useState<Measurement[]>([]);
-    const [ingredientName, setIngredientName] = useState<string>("");
-    const [quantity, setQuantity] = useState<number>(0);
-    const [unit, setUnit] = useState<string>("");
-    const [details, setDetails] = useState<string>("");
+    const [ingredients, setIngredients] = useState<Measurement[]>(Array(2).fill({ name: "", quantity: 0, unit: "", details: "" }));
     const [image, setImage] = useState<File | null | undefined>(null);
     const [open, setOpen] = useState<boolean>(false);
     const [userID, setUserID] = useState<string>("");
 
-    const units = ["bottle",
-        "can",
-        "cl",
-        "cup",
-        "dash",
-        "jigger",
-        "kg",
-        "l",
-        "lb",
-        "ml",
-        "oz",
-        "part",
-        "piece",
-        "pinch",
-        "qt",
-        "scoop",
-        "shot",
-        "slice",
-        "tbsp",
-        "tsp",];
-    const glasses = ["Balloon Glass",
-        "Beer Glass",
-        "Beer mug",
-        "Beer pilsner",
-        "Brandy snifter",
-        "Champagne flute",
-        "Champagne Flute",
-        "Cocktail glass",
-        "Cocktail Glass",
-        "Coffee mug",
-        "Coffee Mug",
-        "Collins glass",
-        "Collins Glass",
-        "Copper Mug",
-        "Cordial glass",
-        "Coupe Glass",
-        "Highball glass",
-        "Highball Glass",
-        "Hurricane glass",
-        "Irish coffee cup",
-        "Jar",
-        "Margarita glass",
-        "Margarita/Coupette glass",
-        "Martini Glass",
-        "Mason jar",
-        "Old-fashioned glass",
-        "Old-Fashioned glass",
-        "Parfait glass",
-        "Pint glass",
-        "Pitcher",
-        "Pousse cafe glass",
-        "Punch bowl",
-        "Punch Bowl",
-        "Shot glass",
-        "Shot Glass",
-        "Whiskey Glass",
-        "Whiskey sour glass",
-        "White wine glass",
-        "Wine Glass",]
-
-    const ingreds = [
-        // Wines
-        { label: "Red Wine", value: "Red Wine" },
-        { label: "White Wine", value: "White Wine" },
-        { label: "Rosé Wine", value: "Rosé Wine" },
-        { label: "Sparkling Wine", value: "Sparkling Wine" },
-        { label: "Dessert Wine", value: "Dessert Wine" },
-        { label: "Fortified Wine", value: "Fortified Wine" },
-
-        // Beers
-        { label: "Lager", value: "Lager" },
-        { label: "Pilsner", value: "Pilsner" },
-        { label: "Ale", value: "Ale" },
-        { label: "Pale Ale", value: "Pale Ale" },
-        { label: "India Pale Ale (IPA)", value: "India Pale Ale (IPA)" },
-        { label: "Brown Ale", value: "Brown Ale" },
-        { label: "Porter", value: "Porter" },
-        { label: "Stout", value: "Stout" },
-        { label: "Wheat Beer", value: "Wheat Beer" },
-        { label: "Sour Beer", value: "Sour Beer" },
-        { label: "Craft Beer", value: "Craft Beer" },
-
-        // Spirits
-        { label: "Vodka", value: "Vodka" },
-        { label: "Gin", value: "Gin" },
-        { label: "Whiskey", value: "Whiskey" },
-        { label: "Bourbon", value: "Bourbon" },
-        { label: "Scotch", value: "Scotch" },
-        { label: "Rye Whiskey", value: "Rye Whiskey" },
-        { label: "Irish Whiskey", value: "Irish Whiskey" },
-        { label: "Rum", value: "Rum" },
-        { label: "White Rum", value: "White Rum" },
-        { label: "Dark Rum", value: "Dark Rum" },
-        { label: "Spiced Rum", value: "Spiced Rum" },
-        { label: "Tequila", value: "Tequila" },
-        { label: "Blanco Tequila", value: "Blanco Tequila" },
-        { label: "Reposado Tequila", value: "Reposado Tequila" },
-        { label: "Añejo Tequila", value: "Añejo Tequila" },
-        { label: "Brandy", value: "Brandy" },
-        { label: "Cognac", value: "Cognac" },
-        { label: "Armagnac", value: "Armagnac" },
-        { label: "Mezcal", value: "Mezcal" },
-
-        // Liqueurs
-        { label: "Amaretto", value: "Amaretto" },
-        { label: "Baileys Irish Cream", value: "Baileys Irish Cream" },
-        { label: "Triple Sec", value: "Triple Sec" },
-        { label: "Cointreau", value: "Cointreau" },
-        { label: "Grand Marnier", value: "Grand Marnier" },
-        { label: "Kahlúa", value: "Kahlúa" },
-        { label: "Sambuca", value: "Sambuca" },
-        { label: "Chartreuse", value: "Chartreuse" },
-        { label: "Campari", value: "Campari" },
-        { label: "Aperol", value: "Aperol" },
-        { label: "Vermouth (Sweet)", value: "Vermouth (Sweet)" },
-        { label: "Vermouth (Dry)", value: "Vermouth (Dry)" },
-
-        // Other Fermented Drinks
-        { label: "Cider", value: "Cider" },
-        { label: "Perry", value: "Perry" },
-        { label: "Saké", value: "Saké" },
-        { label: "Mead", value: "Mead" },
-        { label: "Soju", value: "Soju" },
-        { label: "Baijiu", value: "Baijiu" },]
+    console.log("Current Data:", ingredients)
 
 
     const checkUser = async () => {
@@ -188,46 +57,34 @@ const Create = () => {
         setUserID(user.id);
     }
 
-    const handleIngredientAdded = () => {
-        const found = ingreds.find(item => item.value === ingredientName);
 
-        if (found === undefined) {
-            toast.error("Error", {
-                description: "An ingredient must be selected!",
-            })
-            return;
-        }
+    const handleIngredientRowChange = (id: number, column: string, value: string | number | null) => {
+        const data = { [column]: value }
+        console.log("Updating Row", data)
+        setIngredients((prev) => prev.map((row, index) => index === id ? { ...row, [column]: value } : row))
+    }
 
-
-        let measurement: Measurement = {
-            name: ingredientName,
-            quantity: quantity,
-            unit: unit,
-            details: details
-        }
-
-        console.log(measurement);
-
-        setIngredients(prev => [...prev, measurement])
-        setIngredientName("")
-        setQuantity(0)
-        setUnit("")
-        setDetails("")
-
-        toast("Ingredient Added", {
-            description: `You added ${measurement.name} to you drink!`,
-        })
+    const handleIngredientRowDelete = (id: number) => {
+        setIngredients((prev) => prev.filter((row, index) => index !== id))
     }
 
 
-    const handleRemoveIngredient = (index: number) => {
+    const addIngredientRow = () => {
 
-        setIngredients(prev => prev.filter((_, i) => i !== index))
+        let newRow: Measurement = {
+            name: "",
+            quantity: 0,
+            unit: "",
+            details: ""
+        }
+
+        setIngredients((prev) =>
+            [...prev, newRow])
     }
 
     const handleDrinkForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if(image === null){
+        if (image === null) {
             toast.error("Error", {
                 description: "Make sure to fill out all required fields.",
             })
@@ -239,6 +96,16 @@ const Create = () => {
 
             return;
         }
+        
+        for (let i = 0; i < ingredients.length; i++) {
+            if (ingredients[i].name === ""){
+                toast.error("Error", {
+                    description: "Make sure to fill out the Name for each ingredient",
+            })
+
+            return; 
+            }
+        }
 
         const image_name = `${crypto.randomUUID()}-${image!.name}`
         const image_path = `drink_images/${image_name}`
@@ -249,7 +116,7 @@ const Create = () => {
             upsert: false,
         });
 
-        if (imageError){
+        if (imageError) {
             console.log(imageError);
             return;
         }
@@ -264,7 +131,7 @@ const Create = () => {
             image_url: image_path,
             instructions,
         }
-        
+
         console.log("Inserting the infomation");
         console.log(drink)
         console.log(ingredients)
@@ -282,7 +149,7 @@ const Create = () => {
 
         console.log(drinkData);
 
-
+        // Drink Info states
         setName("")
         setAlcoholic("")
         setCategory("")
@@ -290,12 +157,8 @@ const Create = () => {
         setImage(null)
         setInstructions("")
 
-        // Ingredients States
-        setIngredients([])
-        setIngredientName("")
-        setQuantity(0)
-        setUnit("")
-        setDetails("")
+        // Set back to 2 empty ingredients
+        setIngredients(Array(2).fill({ name: "", quantity: 0, unit: "", details: "" }))
 
         toast.success("Success!", {
             description: "Your drink was created!"
@@ -390,124 +253,13 @@ const Create = () => {
                         </Field>
                     </FieldGroup>
 
-                    {/* <h2 className='sm:text-3xl underline text-center'>Ingredients:</h2> */}
-                    {/* <ol className='list-decimal list-inside'>
-                        {ingredients.length != 0 && ingredients.map((ingred, index) => (
-                            <li key={index} className='flex flex-row justify-center items-center gap-6'>
-                                <div className=''>{index + 1}.</div>
-                                <div className=''>{ingred.name}</div>
-                                <div className=''>{ingred.quantity === 0 ? "No QTY Added" : ingred.quantity}</div>
-                                <div className=''>{ingred.unit === "" ? "No Unit Added" : ingred.unit}</div>
-                                <div className=''>{ingred.details === "" ? "No Details Added" : ingred.details}</div>
-                            </li>
-                        ))}
-                    </ol> */}
-                    <div className='w-full flex flex-col gap-5'>
+                    <div className='w-full flex flex-col gap-5 justify-center items-center'>
                         <h2 className='sm:text-3xl text-center underline'>Ingredients</h2>
-                        {ingredients.length != 0 && <Table className='w-[80%] m-auto text-2xl'>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>#</TableHead>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Quantity</TableHead>
-                                    <TableHead>Unit</TableHead>
-                                    <TableHead>Details</TableHead>
-                                    <TableHead>Delete?</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {ingredients.length != 0 && ingredients.map((ingred, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell className='min-w-[40px]'>{index + 1}.</TableCell>
-                                        <TableCell className=''>{ingred.name}</TableCell>
-                                        <TableCell className=''>{ingred.quantity === 0 ? "Not Added" : ingred.quantity}</TableCell>
-                                        <TableCell className=''>{ingred.unit === "" ? "Not Added" : ingred.unit}</TableCell>
-                                        <TableCell className=''>{ingred.details === "" ? "Not Added" : ingred.details}</TableCell>
-                                        <TableCell className=''><Button type='button' onClick={() => handleRemoveIngredient(index)}><TrashIcon /></Button></TableCell>                                 
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>}
+                        {ingredients.map((row, index) => (
+                            <IngredientRow key={index} id={index} data={ingredients[index]} onChange={handleIngredientRowChange} handleDelete={handleIngredientRowDelete} />
+                        ))}
+                        <Button type='button' variant={"default"} className='hover:cursor-pointer bg-blue-400 text-white' onClick={addIngredientRow}><PlusIcon className='text-white' strokeWidth={4} size={40} /> Add Ingredient Row</Button>
                     </div>
-
-
-                    <FieldGroup className='flex flex-row justify-between items-end'>
-                        <Field className='flex-1/2'>
-                            <FieldLabel htmlFor='ingredient' className='sm:text-xl'>Name*</FieldLabel>
-                            <Popover open={open} onOpenChange={setOpen}>
-                                <PopoverTrigger asChild className='bg-slate-900'>
-                                    <Button
-                                        variant="outline"
-                                        role="combobox"
-                                        aria-expanded={open}
-                                        className="sm:text-lg justify-between"
-
-                                    >
-                                        {ingredientName
-                                            ? ingreds.find((ingredient) => ingredient.value === ingredientName)?.value
-                                            : "Select Ingredient..."}
-                                        <ChevronsUpDown className="opacity-50" />
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[--radix-popover-trigger-width] min-w-[var(--radix-popover-trigger-width)] p-0 bg-slate-900 text-orange-400">
-                                    <Command>
-                                        <CommandInput name='ingredient' placeholder="Search Ingredient..." className="sm:text-lg h-9 text-orange-400" />
-                                        <CommandList> 
-                                            <CommandEmpty className='flex justify-start items-center sm:text-lg p-3'>No Ingredient Found</CommandEmpty>
-                                            <CommandGroup>
-                                                {ingreds.map((ingredient, index) => (
-                                                    <CommandItem
-                                                        key={index}
-                                                        value={ingredient.value}
-                                                        className='flex justify-center items-center sm:text-lg p-2 hover:bg-slate-800'
-                                                        onSelect={(currentValue) => {
-                                                            setIngredientName(currentValue === ingredientName ? "" : currentValue)
-                                                            setOpen(false)
-                                                        }}
-                                                    >
-                                                        {ingredient.label}
-                                                        <Check
-                                                            className={cn(
-                                                                "ml-auto",
-                                                                ingredientName === ingredient.label ? "opacity-100" : "opacity-0"
-                                                            )}
-                                                        />
-                                                    </CommandItem>
-                                                ))}
-                                            </CommandGroup>
-                                        </CommandList>
-                                    </Command>
-                                </PopoverContent>
-                            </Popover>
-                        </Field>
-
-                        <Field className='flex-1/6'>
-                            <FieldLabel htmlFor='quantity' className='sm:text-xl'>Quantity</FieldLabel>
-                            <Input name='quantity' value={quantity} type='number' onChange={(e) => setQuantity(Number(e.target.value))}
-                                className="bg-slate-900 border-gray-700 text-orange-400 focus:border-orange-400 focus:ring-orange-400 placeholder:text-gray-500 placeholder:text-lg md:text-lg" />
-                        </Field>
-
-                        <Field className='flex-1/6'>
-                            <FieldLabel className='sm:text-xl'>Unit</FieldLabel>
-                            <Select value={unit} onValueChange={setUnit}>
-                                <SelectTrigger className='bg-slate-900 text-lg'>
-                                    <SelectValue placeholder="Enter Unit"></SelectValue>
-                                </SelectTrigger>
-                                <SelectContent className=' bg-slate-900 text-orange-400 max-h-[200px]'>
-                                    {units.map((unit, index) => (<SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value={unit} key={index}>{unit}</SelectItem>))}
-                                </SelectContent>
-                            </Select>
-                        </Field>
-
-                        <Field className='flex-1/3'>
-                            <FieldLabel htmlFor='details' className='sm:text-xl'>Details</FieldLabel>
-                            <Input name='details' type='text' onChange={(e) => setDetails(e.target.value)}
-                                className="bg-slate-900 border-gray-700 text-orange-400 focus:border-orange-400 focus:ring-orange-400 placeholder:text-gray-500 placeholder:text-lg md:text-lg" />
-                        </Field>
-
-                        <Button type='button' variant={"default"} className='hover:cursor-pointer bg-blue-400' onClick={handleIngredientAdded}><PlusIcon className='text-white' strokeWidth={4} size={40} /></Button>
-                    </FieldGroup>
-
 
                     <Field>
                         <FieldLabel htmlFor='instructions' className='sm:text-xl'>Instructions*</FieldLabel>

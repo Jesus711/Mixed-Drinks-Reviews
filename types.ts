@@ -35,10 +35,19 @@ type DrinkSection = {
 }
 
 
+type Measurement = {
+    name: string,
+    quantity: number,
+    unit: string,
+    details: string,
+}
+
+
 
 export type {
     FormData,
     Drink,
     Ingredient,
-    DrinkSection
+    DrinkSection,
+    Measurement
 }
