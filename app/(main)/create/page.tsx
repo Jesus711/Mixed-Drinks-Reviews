@@ -6,29 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectItem, SelectTrigger, SelectContent, SelectGroup, SelectValue } from '@/components/ui/select';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
-import { Check, ChevronsUpDown, Plus, PlusIcon, TrashIcon } from 'lucide-react';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import {
-    Command,
-    CommandInput,
-    CommandList,
-    CommandItem,
-    CommandEmpty,
-    CommandGroup,
-} from '@/components/ui/command';
+import { PlusIcon } from 'lucide-react';
 import { toast } from "sonner";
-import { cn } from '@/lib/utils';
-import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
 import { supabase } from '@/lib/supabaseClient';
-import { ingreds, units, glasses } from "../../../constants";
+import { glasses } from "../../../constants";
 import IngredientRow from '@/components/IngredientRow';
 import { Measurement } from '@/types';
 
@@ -40,8 +21,6 @@ const Create = () => {
     const [instructions, setInstructions] = useState<string>("");
     const [ingredients, setIngredients] = useState<Measurement[]>(Array(2).fill({ name: "", quantity: 0, unit: "", details: "" }));
     const [image, setImage] = useState<File | null | undefined>(null);
-    const [open, setOpen] = useState<boolean>(false);
-    const [userID, setUserID] = useState<string>("");
 
     console.log("Current Data:", ingredients)
 
@@ -53,8 +32,6 @@ const Create = () => {
             toast.warning("Must create an account to create drinks!")
             return
         }
-
-        setUserID(user.id);
     }
 
 
@@ -258,7 +235,7 @@ const Create = () => {
                         {ingredients.map((row, index) => (
                             <IngredientRow key={index} id={index} data={ingredients[index]} onChange={handleIngredientRowChange} handleDelete={handleIngredientRowDelete} />
                         ))}
-                        <Button type='button' variant={"default"} className='hover:cursor-pointer bg-blue-400 text-white' onClick={addIngredientRow}><PlusIcon className='text-white' strokeWidth={4} size={40} /> Add Ingredient Row</Button>
+                        <Button type='button' variant={"default"} className='hover:cursor-pointer bg-blue-500 text-white text-xl' onClick={addIngredientRow}><PlusIcon className='text-white' strokeWidth={4} size={20} /> Add Ingredient Row</Button>
                     </div>
 
                     <Field>
