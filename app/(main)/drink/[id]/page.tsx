@@ -86,9 +86,9 @@ const DrinkPage = () => {
   return (
     <div className="flex-1 flex flex-col justify-center items-center gap-y-4">
         {userID !== "" && drink?.created_by === userID && 
-            <div className="flex gap-x-3 justify-center items-center">
-                <Link href={`/drink/${drink.id}/edit`} className="flex p-2 gap-x-2 font-bold rounded-md text-white text-xl bg-blue-400 hover:cursor-pointer"><PencilLine size={30} />Edit Drink</Link>
-                <button onClick={() => setOpenDialog(true)} className="flex p-2 gap-x-2 font-bold rounded-md text-white text-xl bg-red-400 hover:cursor-pointer"><TrashIcon size={30} />Delete Drink</button>
+            <div className="flex xs:flex-row flex-col xs:gap-x-3 gap-y-3 justify-center items-center">
+                <Link href={`/drink/${drink.id}/edit`} className="flex p-2 gap-x-2 font-bold rounded-md text-white text-xl bg-blue-400 hover:cursor-pointer xs:w-auto w-[200px]"><PencilLine size={30} />Edit Drink</Link>
+                <button onClick={() => setOpenDialog(true)} className="flex p-2 gap-x-2 font-bold rounded-md text-white text-xl bg-red-400 hover:cursor-pointer xs:w-auto w-[200px]"><TrashIcon size={30} />Delete Drink</button>
             </div>
             }
             
@@ -97,11 +97,11 @@ const DrinkPage = () => {
         )}
 
         <Dialog open={openDialog}>
-        <DialogContent className="sm:max-w-[360px] bg-orange-100" showCloseButton={false}>
+        <DialogContent className="xs:max-w-[360px] w-[90%] bg-orange-100" showCloseButton={false}>
           <DialogHeader>
             <DialogTitle className='text-center text-xl'>Are you sure you want to delete this drink?</DialogTitle>
           </DialogHeader>
-          <DialogFooter className='sm:flex sm:justify-center sm:items-center'>
+          <DialogFooter className='flex xs:flex-row xs:justify-center xs:items-center'>
             <Button type='button' onClick={() => handleDrinkDelete(true)} className='bg-red-400 text-lg hover:cursor-pointer'>Delete</Button>
             <Button type='button' onClick={() => handleDrinkDelete(false)} className='bg-orange-400 text-lg hover:cursor-pointer'>Cancel</Button>
           </DialogFooter>
