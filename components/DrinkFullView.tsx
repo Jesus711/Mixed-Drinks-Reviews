@@ -163,13 +163,13 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
         </CardDescription>
       </CardFooter>
       <Dialog open={openDialog}>
-        <DialogContent className="sm:max-w-[360px] bg-orange-100" showCloseButton={false}>
+        <DialogContent className="xs:max-w-[360px] w-[90%] bg-orange-100" showCloseButton={false}>
           <DialogHeader>
             <DialogTitle className='text-center text-xl'>Submit Your Rating: {selectedRating}/5 Stars!</DialogTitle>
           </DialogHeader>
-          <DialogFooter className='sm:flex sm:justify-center sm:items-center'>
-            <Button type='button' onClick={() => handleDrinkRating(false)} className='bg-red-400 text-lg'>Cancel</Button>
+          <DialogFooter className='flex xs:flex-row xs:justify-center xs:items-center'>
             <Button type='button' onClick={() => handleDrinkRating(true)} className='bg-orange-400 text-lg'>Rate!</Button>
+            <Button type='button' onClick={() => handleDrinkRating(false)} className='bg-red-400 text-lg'>Cancel</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
