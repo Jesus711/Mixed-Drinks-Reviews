@@ -227,14 +227,14 @@ const Edit = () => {
     return (
         <div className='flex flex-col justify-center items-center gap-5 text-orange-400'>
             <div className='flex flex-col justify-center items-center'>
-                <h1 className='md:text-3xl text-xl font-bold'>Modifying Drink!</h1>
-                <p className='md:text-xl text-lg text-blue-400'>Mixed drinks require at least 2 ingredients.</p>
+                <h1 className='md:text-3xl sm:text-2xl text-xl font-bold'>Modifying Drink!</h1>
+                <p className='md:text-xl sm:text-lg text-blue-400'>Mixed drinks require at least <span className='font-bold'>2*</span> ingredients.</p>
             </div>
-            <Card className='border-2 p-5 bg-slate-800'>
-                <form className='xl:w-[1150px] md:w-[600px] w-full flex flex-col justify-center items-center gap-8' onSubmit={handleDrinkForm}>
-                    <FieldGroup className='flex flex-row'>
-                        <Field className='flex-2'>
-                            <FieldLabel htmlFor='name' className='sm:text-xl'>Drink Name*</FieldLabel>
+            <Card className='p-5 bg-linear-to-b from-slate-800 to-slate-900 md:w-[80%] w-[90%]'>
+                <form className='flex flex-col justify-center items-center gap-8' onSubmit={handleDrinkForm}>
+                    <FieldGroup className='flex md:flex-row flex-col gap-4'>
+                        <Field className='lg:flex-2 flex-1/2'>
+                            <FieldLabel htmlFor='name' className='lg:text-xl text-lg'>Drink Name*</FieldLabel>
                             <Input name='name' className="bg-slate-900 border-gray-700 text-orange-400 focus:border-orange-400 focus:ring-orange-400 placeholder:text-gray-500 placeholder:text-lg md:text-lg"
                                 type="text" placeholder="Screwdriver..." required
                                 onChange={(e) => setName(e.target.value)}
@@ -243,21 +243,21 @@ const Edit = () => {
                             />
                         </Field>
 
-                        <Field className='flex-1'>
-                            <FieldLabel htmlFor='image' className='sm:text-xl'>Image</FieldLabel>
+                        <Field className='lg:flex-1 flex-1/3'>
+                            <FieldLabel htmlFor='image' className='lg:text-xl text-lg'>Image</FieldLabel>
                             <Input name='image' className="bg-slate-900 border-gray-700 text-secondary focus:border-blue-400 focus:ring-blue-400 placeholder:text-gray-500 placeholder:text-lg md:text-lg"
                                 type="file" placeholder="Screwdriver..."
                                 onChange={(e) => setImage(e.target.files?.[0])}
                                 accept='image/*'
                             />
-                            <FieldDescription>Last image uploaded will be used</FieldDescription>
+                            <FieldDescription className='text-center text-blue-400 font-bold'>Last image uploaded will be used</FieldDescription>
                         </Field>
                     </FieldGroup>
 
 
-                    <FieldGroup className='flex flex-row'>
-                        <Field className='flex-1/2'>
-                            <FieldLabel className='sm:text-xl'>Contains Alcohol?*</FieldLabel>
+                    <FieldGroup className='flex md:flex-row gap-3'>
+                        <Field className='xl:flex-1/2 lg:flex-1/5'>
+                            <FieldLabel className='lg:text-xl text-lg xs:justify-start justify-center'>Contains Alcohol?*</FieldLabel>
                             <Select defaultValue='Yes' value={alcoholic} onValueChange={setAlcoholic} required>
                                 <SelectTrigger className='bg-slate-900 text-lg'>
                                     <SelectValue />
@@ -270,8 +270,8 @@ const Edit = () => {
                             </Select>
                         </Field>
 
-                        <Field>
-                            <FieldLabel className='sm:text-xl'>Category*</FieldLabel>
+                        <Field className='xl:flex-1/2 lg:flex-1/4'>
+                            <FieldLabel className='lg:text-xl text-lg xs:justify-start justify-center'>Category*</FieldLabel>
                             <Select value={category} onValueChange={setCategory} required>
                                 <SelectTrigger className='bg-slate-900 text-lg'>
                                     <SelectValue placeholder="Choose Category"></SelectValue>
@@ -292,8 +292,8 @@ const Edit = () => {
                             </Select>
                         </Field>
 
-                        <Field>
-                            <FieldLabel className='sm:text-xl'>Glass*</FieldLabel>
+                        <Field className='xl:flex-1/2 lg:flex-1/3'>
+                            <FieldLabel className='lg:text-xl text-lg xs:justify-start justify-center'>Glass*</FieldLabel>
                             <Select value={glass} onValueChange={setGlass} required>
                                 <SelectTrigger className='bg-slate-900 text-lg'>
                                     <SelectValue placeholder="Choose Glass"></SelectValue>
@@ -306,22 +306,24 @@ const Edit = () => {
                     </FieldGroup>
 
                     <div className='w-full flex flex-col gap-5 justify-center items-center'>
-                        <h2 className='sm:text-3xl text-center underline'>Ingredients</h2>
-                        {ingredients.map((row, index) => (
+                        <div className='w-full flex flex-col justify-center items-center'>
+                            <h2 className='lg:text-3xl sm:text-2xl text-xl text-center font-bold'>Ingredients</h2>
+                            <hr className='bg-orange-400 h-0.5 sm:w-[20%] w-[120px]'></hr>
+                        </div>                        {ingredients.map((row, index) => (
                             <IngredientRow key={index} id={index} data={ingredients[index]} onChange={handleIngredientRowChange} handleDelete={handleIngredientRowDelete} />
                         ))}
-                        <Button type='button' variant={"default"} className='hover:cursor-pointer bg-blue-500 text-white text-xl' onClick={addIngredientRow}><PlusIcon className='text-white' strokeWidth={4} size={20} /> Add Ingredient Row</Button>
+                        <Button type='button' variant={"default"} className='hover:cursor-pointer bg-blue-500 text-white lg:text-xl text-lg' onClick={addIngredientRow}><PlusIcon className='text-white lg:w-5 lg:h-5 w-4 h-4' strokeWidth={4} /> Add Ingredient Row</Button>
                     </div>
 
                     <Field>
-                        <FieldLabel htmlFor='instructions' className='sm:text-xl'>Instructions*</FieldLabel>
+                        <FieldLabel htmlFor='instructions' className='text-xl'>Instructions*</FieldLabel>
                         <Textarea name='instructions' className='bg-slate-900 md:text-xl placeholder:text-lg min-h-[200px]'
                             value={instructions} onChange={(e) => setInstructions(e.target.value)}
                             placeholder='Type instructions in here...' minLength={5}
                         />
                     </Field>
 
-                    <Button variant={'default'} className='bg-blue-500 sm:text-2xl text-white max-w-[200px] p-4'>Save Drink</Button>
+                    <Button variant={'default'} className='bg-blue-500 lg:text-2xl text-xl text-white max-w-[200px] p-4'>Save Drink</Button>
                 </form>
             </Card>
         </div>
