@@ -25,7 +25,6 @@ const LoginForm = () => {
     setLoading(true)
 
     if (isSignUp) {
-      console.log("Creating Account")
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -41,12 +40,9 @@ const LoginForm = () => {
         return;
       }
 
-      console.log("New Account Created!!!")
-      console.log(data)
       router.push("/home")
 
     } else {
-      console.log("Logging In")
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -57,8 +53,6 @@ const LoginForm = () => {
         return;
       }
 
-      console.log(`Logged In!! Welcome, ${data.user.id}`)
-      console.log(data)
       router.push("/home")
 
     }

@@ -1,8 +1,5 @@
 import { useState } from 'react';
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
-import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { supabase } from '@/lib/supabaseClient';
 
 type Props = {
   max?: number;
