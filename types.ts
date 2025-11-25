@@ -42,6 +42,14 @@ type Measurement = {
     details: string,
 }
 
+type IngredientRowProps = {
+    id: number
+    data: Measurement,
+    onChange: (id: number, col: string, value: string | number | null) => void
+    handleDelete: (id: number) => void
+}
+
+
 
 
 export type {
@@ -49,5 +57,6 @@ export type {
     Drink,
     Ingredient,
     DrinkSection,
-    Measurement
+    Measurement,
+    IngredientRowProps
 }
