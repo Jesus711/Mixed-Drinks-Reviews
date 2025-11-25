@@ -81,7 +81,6 @@ const DrinkPage = () => {
         )
     }
 
-    console.log(drink?.created_by === userID, drink?.created_by, userID)
 
   return (
     <div className="flex-1 flex flex-col justify-center items-center gap-y-4">

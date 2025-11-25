@@ -32,7 +32,6 @@ const Edit = () => {
     const router = useRouter();
 
     const { id } = useParams();
-    console.log(id)
 
     const checkUser = async () => {
         const { data: { user } } = await supabase.auth.getUser();
@@ -95,7 +94,6 @@ const Edit = () => {
 
     const handleIngredientRowChange = (id: number, column: string, value: string | number | null) => {
         const data = { [column]: value }
-        console.log("Updating Row", data)
         setIngredients((prev) => prev.map((row, index) => index === id ? { ...row, [column]: value } : row))
     }
 
@@ -152,7 +150,6 @@ const Edit = () => {
                 return;
             }
 
-            console.log(image_data)
         }
 
 
@@ -177,9 +174,6 @@ const Edit = () => {
             last_modified: timestamptz
         }
 
-        console.log("Inserting the infomation");
-        console.log(edited)
-        console.log(ingredients)
 
         const { data: drinkData, error: drinkError } = await supabase.rpc("update_drink", {
             drink_data: edited,
@@ -193,7 +187,6 @@ const Edit = () => {
             return;
         }
 
-        console.log(drinkData);
 
         // Drink Info states
         setName("")
