@@ -12,6 +12,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { glasses } from "../../../constants";
 import IngredientRow from '@/components/IngredientRow';
 import { Measurement } from '@/types';
+import { useRouter } from 'next/navigation';
 
 const Create = () => {
     const [name, setName] = useState<string>("");
@@ -22,14 +23,16 @@ const Create = () => {
     const [ingredients, setIngredients] = useState<Measurement[]>(Array(2).fill({ name: "", quantity: 0, unit: "", details: "" }));
     const [image, setImage] = useState<File | null | undefined>(null);
 
-    console.log("Current Data:", ingredients)
-
+    const router = useRouter();
 
     const checkUser = async () => {
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
-            toast.warning("Must create an account to create drinks!")
+            toast.warning("Must create an account to create drinks!", {
+                duration: 2000
+            })
+            router.push("/browse")
             return
         }
     }
@@ -37,7 +40,6 @@ const Create = () => {
 
     const handleIngredientRowChange = (id: number, column: string, value: string | number | null) => {
         const data = { [column]: value }
-        console.log("Updating Row", data)
         setIngredients((prev) => prev.map((row, index) => index === id ? { ...row, [column]: value } : row))
     }
 
@@ -98,8 +100,6 @@ const Create = () => {
             return;
         }
 
-        console.log(image_data)
-
         const drink = {
             name,
             category,
@@ -109,9 +109,6 @@ const Create = () => {
             instructions,
         }
 
-        console.log("Inserting the infomation");
-        console.log(drink)
-        console.log(ingredients)
 
         const { data: drinkData, error: drinkError } = await supabase.rpc("insert_new_drink", {
             drink_data: drink,
@@ -123,8 +120,6 @@ const Create = () => {
             toast.error(drinkError.message)
             return;
         }
-
-        console.log(drinkData);
 
         // Drink Info states
         setName("")
