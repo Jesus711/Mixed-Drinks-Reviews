@@ -7,6 +7,7 @@ import Image from 'next/image'
 import StarRating from './StarRating'
 import { supabase } from '@/lib/supabaseClient'
 import { images_path } from '@/lib/utils'
+import { toast } from 'sonner'
 
 
 
@@ -25,12 +26,11 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
       return
     }
 
-    console.log(user.id, id);
 
     const { data, error } = await supabase.from("drink_ratings2").select("rating").eq("user_id", user.id).eq('drink_id', id).maybeSingle();
 
     if (data === null) {
-      console.log("User has not rated this drink!")
+      return;
     }
     else {
       setUserRating(data.rating)
@@ -47,13 +47,17 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
     if (confirmRating){
       const { data: { user } } = await supabase.auth.getUser();
 
-      console.log(user?.id, selectedRating, "Rated!", id)
+      if(user === undefined || user === null){
+        toast.error("Drink was not rated.", {
+          description: "Must be logged in to rate drinks!",
+          duration: 2000,
+          position: "bottom-center",
+        })
 
-      console.log({
-        user_id: user?.id,
-        id,
-        rating: selectedRating
-      })
+        setOpenDialog(false)
+        setSelectedRating(-1)
+        return
+      }
 
       let rating = {
         user_id: user?.id,
@@ -63,7 +67,10 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
 
       const { data, error } = await supabase.from("drink_ratings2").upsert(rating, { onConflict: 'user_id, drink_id' });
 
-      console.log(data, error)
+      if (error) {
+        console.log(error);
+      }
+
       setUserRating(selectedRating)
       await updateRatingAvgCount()
     } else {
@@ -95,7 +102,6 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
     displayUserRating()
   }, [])
 
-  console.log(avg_rating, rating_count)
 
   return (
     <Card className="animate-fade-in md:min-w-[300px] md:max-w-4xl w-full border-orange-400 border-3 text-white h-full flex flex-col justify-between whitespace-wrap text-wrap bg-gradient-to-b from-slate-700 to-slate-900 ">
@@ -148,7 +154,7 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
       </CardContent>
 
       <CardFooter className='flex flex-col gap-y-3'>
-        <CardDescription className='self-start px-2 text-2xl text-left'>
+        <CardDescription className='self-start flex flex-col gap-3 px-2 text-2xl text-left'>
           <h2 className='text-3xl font-semibold text-left'>Instructions:</h2>
           {instructions.split(".").map((sentence, index) => {
 
@@ -157,7 +163,7 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
             }
 
             return (
-              <li key={index} className='pl-3'>{sentence}</li>
+              <li key={index} className=''>{sentence}</li>
             )
           })}
         </CardDescription>
