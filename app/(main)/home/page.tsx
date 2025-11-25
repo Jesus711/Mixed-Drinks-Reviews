@@ -7,6 +7,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Drink } from '@/types'
 import CardSkeleton from '@/components/CardSkeleton'
 import { User } from '@supabase/supabase-js'
+import { toast } from 'sonner'
 
 const SKELETON_CARDS = 7;
 
@@ -35,7 +36,10 @@ const HomePage = () => {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push("/")
+        toast.warning("Must create an account to view home page", {
+          duration: 2000
+        })
+        router.push("/browse")
         return
       }
 
@@ -79,7 +83,6 @@ const HomePage = () => {
           ids = [...ids, ...userRatedDrinks.map(drink => drink.id)]
         }
 
-        console.log(ids)
         const { data, error } = await supabase.from("drink_ingredients").select("drink_id, drinks2(*, drink_ingredients(*))").in("ingredient", ingredients).not("drink_id", "in", `(${ids.join(",")})`).limit(10);
         if (error) {
           console.log("ERROR", error.message);
@@ -123,7 +126,6 @@ const HomePage = () => {
         console.error('Error fetching rated drinks:', ratedError);
       } else {
         const drinks = rated.map(r => r.drinks2);
-        console.log(drinks)
         setRatedDrinks(drinks)
         return drinks
       }
@@ -141,8 +143,6 @@ const HomePage = () => {
           console.log(error);
           return []
         }
-
-        console.log(data)
 
         const sorted = data.sort(
           (a, b) => prevIDs.indexOf(a.id) - prevIDs.indexOf(b.id)
@@ -173,9 +173,6 @@ const HomePage = () => {
 
   }, [])
 
-  if(!loading){
-    console.log(drinks)
-  }
 
   return (
     <div className='flex-1 flex flex-col gap-y-9 px-5'>
