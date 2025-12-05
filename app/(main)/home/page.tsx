@@ -62,7 +62,7 @@ const HomePage = () => {
       // else, using the most recently viewed drink and one of the rated drinks, retrieve 10 drinks with similar ingredients
       // if the number of recommended drinks is less than 7, append the 5 top rated drinks
       if (prevDrinks.length === 0 && userRatedDrinks.length === 0) {
-        const { data, error } = await supabase.from("drinks2").select("*, drink_ingredients(*)").order("avg_rating", { ascending: false }).limit(10);
+        const { data, error } = await supabase.from("drinks").select("*, drink_ingredients(*)").order("avg_rating", { ascending: false }).limit(10);
         if (error) {
           console.log("ERROR", error.message);
         }
@@ -83,14 +83,14 @@ const HomePage = () => {
           ids = [...ids, ...userRatedDrinks.map(drink => drink.id)]
         }
 
-        const { data, error } = await supabase.from("drink_ingredients").select("drink_id, drinks2(*, drink_ingredients(*))").in("ingredient", ingredients).not("drink_id", "in", `(${ids.join(",")})`).limit(10);
+        const { data, error } = await supabase.from("drink_ingredients").select("drink_id, drinks(*, drink_ingredients(*))").in("ingredient", ingredients).not("drink_id", "in", `(${ids.join(",")})`).limit(10);
         if (error) {
           console.log("ERROR", error.message);
         }
         else {
           let drinks: Drink[] = []
           for (let i = 0; i < data.length; i++) {
-            let drink: Drink | Drink[] = data[i].drinks2
+            let drink: Drink | Drink[] = data[i].drinks
             if (Array.isArray(drink)) {
               drink = drink[0]
             }
@@ -98,7 +98,7 @@ const HomePage = () => {
           }
 
           if (drinks.length < 7) {
-            const { data: highRated, error } = await supabase.from("drinks2").select("*, drink_ingredients(*)").order("avg_rating", { ascending: false }).limit(5);
+            const { data: highRated, error } = await supabase.from("drinks").select("*, drink_ingredients(*)").order("avg_rating", { ascending: false }).limit(5);
             if (error) {
               console.log("ERROR", error.message);
             }
@@ -118,14 +118,14 @@ const HomePage = () => {
     const getUserRatedDrinks = async (user: User) => {
 
       const { data: rated, error: ratedError } = await supabase
-        .from('drink_ratings2')
-        .select('*, drinks2(*, drink_ingredients(*))')
+        .from('drink_ratings')
+        .select('*, drinks(*, drink_ingredients(*))')
         .eq('user_id', user.id);
 
       if (ratedError) {
         console.error('Error fetching rated drinks:', ratedError);
       } else {
-        const drinks = rated.map(r => r.drinks2);
+        const drinks = rated.map(r => r.drinks);
         setRatedDrinks(drinks)
         return drinks
       }
@@ -138,7 +138,7 @@ const HomePage = () => {
       if (stored !== null && stored.length > 0) {
         const prevIDs: number[] = JSON.parse(stored)
 
-        const { data, error } = await supabase.from("drinks2").select("*, drink_ingredients(*)").in("id", prevIDs);
+        const { data, error } = await supabase.from("drinks").select("*, drink_ingredients(*)").in("id", prevIDs);
         if (error) {
           console.log(error);
           return []
@@ -156,7 +156,7 @@ const HomePage = () => {
     }
 
     const getUserCreatedDrinks = async (userID: string) => {
-      const { data, error } = await supabase.from("drinks2").select("*, drink_ingredients(*)").eq("created_by", userID);
+      const { data, error } = await supabase.from("drinks").select("*, drink_ingredients(*)").eq("created_by", userID);
       if (error) {
         console.log(error);
       }

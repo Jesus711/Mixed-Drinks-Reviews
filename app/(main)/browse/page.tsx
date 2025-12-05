@@ -99,7 +99,7 @@ const Browse = () => {
   useEffect(() => {
     const fetchTotalPages = async () => {
       const { count, error } = await supabase
-        .from('drinks2')
+        .from('drinks')
         .select('*, drink_ingredients(*)', { count: 'exact', head: true }).ilike("name", `%${searchParam}%`);
 
       if (error) {
@@ -121,7 +121,7 @@ const Browse = () => {
       setLoading(true)
       const start = (page - 1) * LIMIT
       const end = start + LIMIT - 1
-      const { data, error } = await supabase.from("drinks2").select("*, drink_ingredients(*)").ilike("name", `%${searchParam}%`).range(start, end);
+      const { data, error } = await supabase.from("drinks").select("*, drink_ingredients(*)").ilike("name", `%${searchParam}%`).range(start, end);
 
       if (error) {
         console.log("Error:", error.message);

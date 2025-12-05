@@ -36,7 +36,7 @@ const TopRatedDrinks = () => {
     const sections: DrinkSection[] = [];
     let section: DrinkSection;
 
-    const { data: topRated, error: topRatedError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+    const { data: topRated, error: topRatedError } = await supabase.from("drinks").select("*, drink_ingredients(*)").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
     if (topRatedError) {
       console.log(topRatedError)
     }
@@ -56,7 +56,7 @@ const TopRatedDrinks = () => {
 
     else {
       let ids = tequilaIds.map(drink => drink.drink_id)
-      const { data: tequilaDrinks, error: tequilaDrinksError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+      const { data: tequilaDrinks, error: tequilaDrinksError } = await supabase.from("drinks").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
       if (tequilaDrinksError) {
         console.log(tequilaDrinksError)
       }
@@ -78,7 +78,7 @@ const TopRatedDrinks = () => {
 
     else {
       let ids = vodkaIds.map(drink => drink.drink_id)
-      const { data: vodkaDrinks, error: vodkaDrinksError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+      const { data: vodkaDrinks, error: vodkaDrinksError } = await supabase.from("drinks").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
       if (vodkaDrinksError) {
         console.log(vodkaDrinksError)
       }
@@ -100,7 +100,7 @@ const TopRatedDrinks = () => {
 
     else {
       let ids = whiskeyIds.map(drink => drink.drink_id)
-      const { data: whiskeyDrinks, error: whiskeyDrinksError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+      const { data: whiskeyDrinks, error: whiskeyDrinksError } = await supabase.from("drinks").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
       if (whiskeyDrinksError) {
         console.log(whiskeyDrinksError)
       }
@@ -122,7 +122,7 @@ const TopRatedDrinks = () => {
 
     else {
       let ids = rumIds.map(drink => drink.drink_id)
-      const { data: rumDrinks, error: rumDrinksError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+      const { data: rumDrinks, error: rumDrinksError } = await supabase.from("drinks").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
       if (rumDrinksError) {
         console.log(rumDrinksError)
       }
@@ -144,7 +144,7 @@ const TopRatedDrinks = () => {
 
     else {
       let ids = ginIds.map(drink => drink.drink_id)
-      const { data: ginDrinks, error: ginDrinksError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+      const { data: ginDrinks, error: ginDrinksError } = await supabase.from("drinks").select("*, drink_ingredients(*)").filter("id", "in", `(${ids.join(",")})`).order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
       if (ginDrinksError) {
         console.log(ginDrinksError)
       }
@@ -158,7 +158,7 @@ const TopRatedDrinks = () => {
       }
     }
 
-    const { data: coffeeTeaDrinks, error: coffeeTeaError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").eq("category", "Coffee / Tea").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+    const { data: coffeeTeaDrinks, error: coffeeTeaError } = await supabase.from("drinks").select("*, drink_ingredients(*)").eq("category", "Coffee / Tea").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
     if (coffeeTeaError) {
       console.log(coffeeTeaError)
     }
@@ -170,7 +170,7 @@ const TopRatedDrinks = () => {
       sections.push(section)
     }
 
-    const { data: nonAlcoDrinks, error: nonAlcoError } = await supabase.from("drinks2").select("*, drink_ingredients(*)").ilike("alcoholic", "No").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
+    const { data: nonAlcoDrinks, error: nonAlcoError } = await supabase.from("drinks").select("*, drink_ingredients(*)").ilike("alcoholic", "No").order("avg_rating", { ascending: false }).limit(MAX_DRINKS)
     if (nonAlcoError) {
       console.log(nonAlcoError)
     }
