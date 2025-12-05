@@ -106,6 +106,9 @@ const Create = () => {
 
         if (imageError) {
             console.log(imageError);
+            toast.error("Error with image", {
+                description: "Drink was not created. Images only allowed. Max size limit is 5mb."
+            })
             return;
         }
 
