@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 const MAX_PREV_DRINKS_STORED = 7
+const bucket_url = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_URL
 
 const DrinkCard = ({ id, name, category, alcoholic, glass, instructions, image_url, last_modified, created_by, drink_ingredients, avg_rating, rating_count, created_date}: Drink) => {
 
@@ -37,7 +38,7 @@ const DrinkCard = ({ id, name, category, alcoholic, glass, instructions, image_u
         <CardAction className='flex justify-center items-centerhover:cursor-pointer xl:text-[16px] text-sm'>View More</CardAction>
       </CardHeader>
       <CardContent className='flex justify-center items-center'>
-        <Image className='rounded-sm' priority src={`http://localhost:8000/storage/v1/object/public/${image_url}`} alt={name} width={300} height={300} />
+        <Image className='rounded-sm' priority src={`${bucket_url}${image_url}`} alt={name} width={300} height={300} />
       </CardContent>
       <CardFooter className='flex flex-col md:gap-y-2 gay-y-1'>
         <p className='md:text-xl text-md font-semibold'>{category}</p>

@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
-import { Card, CardDescription, CardHeader, CardTitle, CardAction, CardContent, CardFooter } from './ui/card'
+import { Card, CardDescription, CardHeader, CardTitle, CardContent, CardFooter } from './ui/card'
 import { Button } from './ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Drink } from '@/types'
 import Image from 'next/image'
 import StarRating from './StarRating'
 import { supabase } from '@/lib/supabaseClient'
-import { images_path } from '@/lib/utils'
 import { toast } from 'sonner'
+import { DialogDescription } from '@radix-ui/react-dialog'
 
 
+const bucket_url = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_URL
 
 const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, image_url, last_modified, created_by, drink_ingredients, avg_rating, rating_count, created_date}: Drink) => {
   const [userRated, setUserRating] = useState<number>(-1);
@@ -26,8 +27,7 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
       return
     }
 
-
-    const { data, error } = await supabase.from("drink_ratings2").select("rating").eq("user_id", user.id).eq('drink_id', id).maybeSingle();
+    const { data, error } = await supabase.from("drink_ratings").select("rating").eq("user_id", user.id).eq('drink_id', id).maybeSingle();
 
     if (data === null) {
       return;
@@ -65,7 +65,7 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
         rating: selectedRating
       }
 
-      const { data, error } = await supabase.from("drink_ratings2").upsert(rating, { onConflict: 'user_id, drink_id' });
+      const { data, error } = await supabase.from("drink_ratings").upsert(rating, { onConflict: 'user_id, drink_id' });
 
       if (error) {
         console.log(error);
@@ -81,7 +81,7 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
   }
 
   const updateRatingAvgCount = async () => {
-    const { data: rating, error} = await supabase.from("drinks2").select("avg_rating, rating_count").eq("id", id).single();
+    const { data: rating, error} = await supabase.from("drinks").select("avg_rating, rating_count").eq("id", id).single();
 
     if (error) {
       console.log(error)
@@ -129,7 +129,7 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
 
       <CardContent className='flex lg:flex-row flex-col justify-center items-center gap-y-5'>
         <div className='flex flex-col gap-y-5'>
-          <Image priority className='rounded-md' src={`${images_path}${image_url}`} alt={name} width={360} height={360} />
+          <Image priority className='rounded-md' src={`${bucket_url}${image_url}`} alt={name} width={360} height={360} />
           {userRated != -1 ? (
             <div className='flex flex-col justify-center items-center gap-y-2'>
               <h3 className='text-center text-2xl font-bold'>Your Rating: {userRated} Stars</h3>
@@ -147,7 +147,7 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
           <h2 className='md:text-4xl text-2xl font-semibold text-center'>Ingredients:</h2>
           <ul className={`flex flex-col gap-y-2 text-left `}>
             {drink_ingredients.map((ingred, index) => (
-              <li className='md:text-3xl text-2xl' key={index}>{ingred.ingredient} {ingred.quantity === 0 ? "" : `- ${ingred.quantity}`} {ingred.unit === "" ? "" : ingred.unit} {ingred.details === "" ? "" : `- ${ingred.details}`}</li>
+              <li className='md:text-3xl text-2xl' key={index}>{ingred.ingredient} {ingred.quantity === 0 ? "" : `- ${ingred.quantity}`} {ingred.unit === "" ? "" : ingred.unit} {ingred.details === "" || ingred.details === null ? "" : `- ${ingred.details}`}</li>
             ))}
           </ul>
         </div>
@@ -171,7 +171,8 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
       <Dialog open={openDialog}>
         <DialogContent className="xs:max-w-[360px] w-[90%] bg-orange-100" showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle className='text-center text-xl'>Submit Your Rating: {selectedRating}/5 Stars!</DialogTitle>
+            <DialogTitle className='text-center text-2xl'>Submit Your Rating</DialogTitle>
+            <DialogDescription className='text-center text-xl font-semibold'>You selected {selectedRating}/5 Stars!</DialogDescription>
           </DialogHeader>
           <DialogFooter className='flex xs:flex-row xs:justify-center xs:items-center'>
             <Button type='button' onClick={() => handleDrinkRating(true)} className='bg-orange-400 text-lg'>Rate!</Button>
