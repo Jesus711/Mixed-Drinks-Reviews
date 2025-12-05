@@ -12,6 +12,7 @@ import { PencilLine, TrashIcon } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { DialogDescription } from "@radix-ui/react-dialog"
 
 
 const DrinkPage = () => {
@@ -27,18 +28,21 @@ const DrinkPage = () => {
 
         const getUser = async () => {
             const { data: {user}, error } = await supabase.auth.getUser();
+
+            // If user is null return, no need to display auth not in session error
+            if (user === null){
+                return;
+            }
+
             if (error) {
                 console.log(error);
             }
 
-            if (user === null){
-                return;
-            }
             setUserID(user.id);
         }
 
         const getDrinkInfo = async () => {
-            const { data, error }  = await supabase.from("drinks2").select("*, drink_ingredients(*)").eq("id", id).single();
+            const { data, error }  = await supabase.from("drinks").select("*, drink_ingredients(*)").eq("id", id).single();
 
             if (error){
                 console.log(error)
@@ -62,9 +66,24 @@ const DrinkPage = () => {
             return;
         }
 
-        const { data, error } = await supabase.from("drinks2").delete().eq("id", id);
+
+        const { data, error } = await supabase.from("drinks").delete().eq("id", id);
         if (error) {
             console.log(error);
+            toast.error("Error occurred!", {
+                description: "Drink was not deleted. Try again."
+            })
+            return;
+        }
+        else {
+
+            const img = drink!.image_url.slice(13)
+
+            const { data: imgDel, error: imgError } = await supabase.storage.from("drink_images").remove([img])
+
+            if (imgError) {
+                console.log("Stored image was not deleted!")
+            }
         }
 
         setOpenDialog(false)
@@ -98,7 +117,8 @@ const DrinkPage = () => {
         <Dialog open={openDialog}>
         <DialogContent className="xs:max-w-[360px] w-[90%] bg-orange-100" showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle className='text-center text-xl'>Are you sure you want to delete this drink?</DialogTitle>
+            <DialogTitle className='text-center text-2xl'>Delete this drink forever?</DialogTitle>
+            <DialogDescription className='text-center text-md font-semibold'>This operation cannot be undone!</DialogDescription>
           </DialogHeader>
           <DialogFooter className='flex xs:flex-row xs:justify-center xs:items-center'>
             <Button type='button' onClick={() => handleDrinkDelete(true)} className='bg-red-400 text-lg hover:cursor-pointer'>Delete</Button>
