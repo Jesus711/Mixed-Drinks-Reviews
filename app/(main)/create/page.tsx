@@ -22,6 +22,7 @@ const Create = () => {
     const [instructions, setInstructions] = useState<string>("");
     const [ingredients, setIngredients] = useState<Measurement[]>(Array(2).fill({ name: "", quantity: 0, unit: "", details: "" }));
     const [image, setImage] = useState<File | null | undefined>(null);
+    const [userID, setUserID] = useState<string>("");
 
     const router = useRouter();
 
@@ -35,6 +36,8 @@ const Create = () => {
             router.push("/browse")
             return
         }
+
+        setUserID(user.id)
     }
 
 
@@ -86,9 +89,8 @@ const Create = () => {
             }
         }
 
-        const image_name = `${crypto.randomUUID()}-${image!.name}`
+        const image_name = `${userID}/${crypto.randomUUID()}-${image!.name}`
         const image_path = `drink_images/${image_name}`
-
 
         const { data: image_data, error: imageError } = await supabase.storage.from("drink_images").upload(image_name, image!, {
             cacheControl: '3600',
@@ -123,7 +125,7 @@ const Create = () => {
 
         // Drink Info states
         setName("")
-        setAlcoholic("")
+        setAlcoholic("Yes")
         setCategory("")
         setGlass("")
         setImage(null)
@@ -132,8 +134,13 @@ const Create = () => {
         // Set back to 2 empty ingredients
         setIngredients(Array(2).fill({ name: "", quantity: 0, unit: "", details: "" }))
 
+
         toast.success("Success!", {
-            description: "Your drink was created!"
+            description: "Your drink was created!",
+            action: {
+                label: "View Drink",
+                onClick: () => {router.push(`/drink/${drinkData}`)}
+            }
         })
 
     }
@@ -227,8 +234,8 @@ const Create = () => {
 
                     <div className='w-full flex flex-col gap-5 justify-center items-center'>
                         <div className='w-full flex flex-col justify-center items-center'>
-                            <h2 className='lg:text-3xl sm:text-2xl text-xl text-center font-bold'>Ingredients</h2>
-                            <hr className='bg-orange-400 h-0.5 sm:w-[20%] w-[120px]'></hr>
+                            <h2 className='lg:text-3xl sm:text-2xl text-xl text-center font-bold'>Ingredients*</h2>
+                            <hr className='bg-orange-400 h-0.5 sm:w-[200px] w-[120px]'></hr>
                         </div>
 
                         {ingredients.map((_, index) => (
