@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 import { toast } from "sonner";
 import { supabase } from '@/lib/supabaseClient';
-import { glasses } from "../../../constants";
+import { categories, glasses } from "../../../constants";
 import IngredientRow from '@/components/IngredientRow';
 import { Measurement } from '@/types';
 import { useRouter } from 'next/navigation';
@@ -42,7 +42,6 @@ const Create = () => {
 
 
     const handleIngredientRowChange = (id: number, column: string, value: string | number | null) => {
-        const data = { [column]: value }
         setIngredients((prev) => prev.map((row, index) => index === id ? { ...row, [column]: value } : row))
     }
 
@@ -83,10 +82,18 @@ const Create = () => {
             if (ingredients[i].name === ""){
                 toast.error("Error", {
                     description: "Make sure to fill out the Name for each ingredient",
+                })
+
+                return; 
+            }
+        }
+
+        if (!categories.includes(category) || !glasses.includes(glass)) {
+            toast.error("Error", {
+                description: "Make sure to choose the category and glass"
             })
 
-            return; 
-            }
+            return;
         }
 
         const image_name = `${userID}/${crypto.randomUUID()}-${image!.name}`
@@ -203,18 +210,10 @@ const Create = () => {
                                 <SelectTrigger className='bg-slate-900 text-lg'>
                                     <SelectValue placeholder="Choose Category"></SelectValue>
                                 </SelectTrigger>
-                                <SelectContent className=' bg-slate-900 text-orange-400'>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Beer'>Beer</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Cocktail'>Cocktail</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Cocoa'>Cocoa</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Coffee / Tea'>Coffee / Tea</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Homemade Liqueur'>Homemade Liqueur</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Ordinary Drink'>Ordinary Drink</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Party Drink'>Punch / Party Drink</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Shake'>Shake</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Shot'>Shot</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Soft Drink'>Soft Drink</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Other'>Other</SelectItem>
+                                <SelectContent className='bg-slate-900 text-orange-400'>
+                                    {categories.map((category, index) => (
+                                    <SelectItem key={index} className="sm:text-xl text-lg hover:bg-slate-700" value={category}>{category}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </Field>

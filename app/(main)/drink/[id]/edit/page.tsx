@@ -3,19 +3,17 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectItem, SelectTrigger, SelectContent, SelectGroup, SelectValue } from '@/components/ui/select';
+import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from '@/components/ui/select';
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 import { toast } from "sonner";
-import { cn, images_path } from '@/lib/utils';
 import { supabase } from '@/lib/supabaseClient';
-import { glasses } from "../../../../../constants";
+import { glasses, categories } from "../../../../../constants";
 import IngredientRow from '@/components/IngredientRow';
 import { Drink, Measurement } from '@/types';
 import { useParams, useRouter } from 'next/navigation';
 import Loading from '@/components/Loading';
-import DrinkCard from '@/components/DrinkCard';
 
 const Edit = () => {
     const [loading, setLoading] = useState<boolean>(true);
@@ -45,7 +43,7 @@ const Edit = () => {
             setUserID(user.id);
         }
 
-        const { data, error } = await supabase.from("drinks2").select("*, drink_ingredients(*)").eq("id", id).single();
+        const { data, error } = await supabase.from("drinks").select("*, drink_ingredients(*)").eq("id", id).single();
         if (error) {
             console.log(error)
         }
@@ -129,15 +127,23 @@ const Edit = () => {
             if (ingredients[i].name === ""){
                 toast.error("Error", {
                     description: "Make sure to fill out the Name for each ingredient",
+                })
+
+                return; 
+            }
+        }
+
+        if (!categories.includes(category) || !glasses.includes(glass)) {
+            toast.error("Error", {
+                description: "Make sure to choose the category and glass"
             })
 
-            return; 
-            }
+            return;
         }
 
         let image_path = "";
         if (image !== null) {
-            let image_name = `${crypto.randomUUID()}-${image!.name}`
+            let image_name = `${userID}/${crypto.randomUUID()}-${image!.name}`
             image_path = `drink_images/${image_name}`
 
             const { data: image_data, error: imageError } = await supabase.storage.from("drink_images").upload(image_name, image!, {
@@ -147,6 +153,9 @@ const Edit = () => {
 
             if (imageError) {
                 console.log(imageError);
+                toast.error("Error with image", {
+                    description: "Drink was not created. Images only allowed. Max size limit is 5mb."
+                })
                 return;
             }
 
@@ -186,11 +195,23 @@ const Edit = () => {
             toast.error(drinkError.message)
             return;
         }
+        else {
+            // Update drink was successful
+            // Remove old image if new image was uploaded
+            if (image !== null) {
+                const img = drink!.image_url.slice(13)
+                const { data: imgdata, error: imgError } = await supabase.storage.from("drink_images").remove([img])
+
+                if (imgError) {
+                    console.log(imgError);
+                }
+            }
+        }
 
 
         // Drink Info states
         setName("")
-        setAlcoholic("")
+        setAlcoholic("Yes")
         setCategory("")
         setGlass("")
         setImage(null)
@@ -203,6 +224,7 @@ const Edit = () => {
             description: "Your drink was edited!"
         })
 
+        router.push(`/drink/${id}`)
     }
 
 
@@ -255,7 +277,7 @@ const Edit = () => {
                                 <SelectTrigger className='bg-slate-900 text-lg'>
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className=' bg-slate-900 text-orange-400'>
+                                <SelectContent className='bg-slate-900 text-orange-400'>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Yes'>Yes</SelectItem>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='No'>No</SelectItem>
                                     <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Optional'>Optional</SelectItem>
@@ -270,17 +292,9 @@ const Edit = () => {
                                     <SelectValue placeholder="Choose Category"></SelectValue>
                                 </SelectTrigger>
                                 <SelectContent className=' bg-slate-900 text-orange-400'>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Beer'>Beer</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Cocktail'>Cocktail</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Cocoa'>Cocoa</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Coffee / Tea'>Coffee / Tea</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Homemade Liqueur'>Homemade Liqueur</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Ordinary Drink'>Ordinary Drink</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Party Drink'>Punch / Party Drink</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Shake'>Shake</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Shot'>Shot</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Soft Drink'>Soft Drink</SelectItem>
-                                    <SelectItem className="sm:text-xl text-lg hover:bg-slate-700" value='Other'>Other</SelectItem>
+                                    {categories.map((category, index) => (
+                                    <SelectItem key={index} className="sm:text-xl text-lg hover:bg-slate-700" value={category}>{category}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </Field>
