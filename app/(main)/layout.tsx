@@ -43,7 +43,7 @@ export default function HomeLayout({children,}: {children: React.ReactNode}) {
             <header className="bg-gray-900 flex justify-between items-center bg-primary text-white p-4 shadow">
                 <div className="flex flex-col">
                     <h1 className="xl:text-3xl lg:text-xl text-lg text-primary font-bold">Mixed Bevs Reviews</h1>
-                    <p className="xl:text-xl lg:text-md text-xs text-white">Learn and Rate Mixed Beverages!</p>
+                    <p className="xl:text-xl lg:text-md text-xs text-white">Learn, Create, and Rate Mixed Beverages!</p>
                 </div>
 
                 <nav className="flex-1 lg:flex hidden justify-center items-center gap-x-14 xl:text-2xl lg:text-lg text-md font-semibold">
