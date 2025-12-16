@@ -11,10 +11,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden">
-      <main className="flex-1 flex flex-col justify-center items-center lg:gap-y-10 gap-y-5">
+      <main className="flex flex-col justify-center items-center lg:gap-y-10 gap-y-8">
         <div className="flex flex-col justify-center items-center">
-          <h1 className="lg:text-6xl sm:text-4xl xs:text-2xl text-lg text-center text-orange-400 font-bold">Welcome to Mixed Bevs Reviews!</h1>
-          <p className="lg:text-3xl sm:text-xl xs:text-lg text-sm sm:w-auto w-[70%] text-secondary text-center font-semibold">Learn or create new mixed bevs and leave your rating!</p>
+          <h1 className="lg:text-6xl sm:text-4xl xs:text-2xl text-xl text-center text-orange-400 font-bold">Welcome to Mixed Bevs Reviews!</h1>
+          <p className="lg:text-3xl sm:text-xl xs:text-lg text-sm sm:w-auto w-[80%] text-secondary text-center font-semibold">Learn or create new mixed bevs and leave your rating!</p>
         </div>
         {loading === 1 && <Loading message="Logging In" />}
         {loading === 2 && <Loading message="Recovery password link sent" />}

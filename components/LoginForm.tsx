@@ -89,7 +89,7 @@ const LoginForm = ({updateLoading} : {updateLoading: (value: number) => void}) =
   }
 
   return (
-    <Card className="bg-gray-950 sm:px-8 sm:py-6 px-6 py-2 w-full max-w-md text-primary border-orange-400 border-2">
+    <Card className="bg-gray-950 sm:px-8 sm:py-6 px-6 py-2 sm:w-md xs:w-[360px] w-[300px] text-primary border-orange-400 border-2">
       <form className="w-full flex flex-col justify-center items-center gap-y-5"
         onSubmit={(e) => handleSubmit(e)}>
         <h2 className="sm:text-3xl text-2xl text-center font-bold">{isSignUp ? "Create Your Account" : "Welcome Back!"}</h2>
