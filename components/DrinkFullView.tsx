@@ -107,14 +107,14 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
     <Card className="animate-fade-in md:min-w-[300px] md:max-w-4xl w-full border-orange-400 border-3 text-white h-full flex flex-col justify-between whitespace-wrap text-wrap bg-gradient-to-b from-slate-700 to-slate-900 ">
       <CardHeader className='w-full flex-1 flex sm:flex-row flex-col justify-between items-center'>
         <div>
-          <CardTitle className='md:text-3xl text-xl'>{name}</CardTitle>
-          <CardDescription className='md:text-2xl text-lg sm:text-left text-center'>{alcoholic === "Yes" ? "Alcoholic" : "Non-Alcoholic"}</CardDescription>
+          <CardTitle className='xs:text-3xl text-2xl text-amber-100'>{name}</CardTitle>
+          <CardDescription className='xs:text-2xl text-lg sm:text-left text-center font-semibold text-orange-300'>{alcoholic === "Yes" ? "Alcoholic" : "Non-Alcoholic"}</CardDescription>
         </div>
 
         {ratingCount === 0 ? (
-          <div className='flex flex-col justify-center items-center bg-gray-700 p-2 rounded-2xl'>
-            <h3 className='text-2xl font-bold'>Unrated</h3>
-            <p className='text-lg'>Be the First!</p>
+          <div className='flex flex-col justify-center items-center bg-gray-800 px-4 py-2 rounded-2xl'>
+            <h3 className='xs:text-2xl text-lg font-bold'>Unrated</h3>
+            <p className='sm:text-lg text-md'>Be the First!</p>
           </div>
         ) : (
           <div className='flex flex-col'>
@@ -143,8 +143,8 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
             </div>)
           }
         </div>
-        <div className={`flex-1 flex flex-col items-center justify-start gap-y-3 ${drink_ingredients.length <= 5 && 'md:py-10 md:pt-0 pt-8'}`}>
-          <h2 className='md:text-4xl text-2xl font-semibold text-center'>Ingredients:</h2>
+        <div className={`flex-1 flex flex-col items-center justify-start gap-y-3 ${drink_ingredients.length <= 5 && 'md:py-10 md:pt-0 pt-4'}`}>
+          <h2 className='md:text-4xl text-3xl font-semibold text-center'>Ingredients:</h2>
           <ul className={`flex flex-col gap-y-2 text-left `}>
             {drink_ingredients.map((ingred, index) => (
               <li className='md:text-3xl text-2xl' key={index}>{ingred.ingredient} {ingred.quantity === 0 ? "" : `- ${ingred.quantity}`} {ingred.unit === "" ? "" : ingred.unit} {ingred.details === "" || ingred.details === null ? "" : `- ${ingred.details}`}</li>
