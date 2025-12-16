@@ -5,6 +5,7 @@
 - Tailwind CSS
 - React
 - TypeScript
+- Utilized shadcn ui components
 
 ## Backend
 - Supabase
@@ -16,7 +17,7 @@
 
 ## Live Demo
 
-[View Live Site]()
+[View Live Site](https://mixed-drinks-reviews.vercel.app/)
 
 ## Screenshot
 

@@ -24,7 +24,7 @@ const LoginForm = ({updateLoading} : {updateLoading: (value: number) => void}) =
   const handlePasswordRecovery = async () => {
     updateLoading(2)
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "http://localhost:3000/recovery"
+      redirectTo: "https://mixed-drinks-reviews.vercel.app/recovery"
     })
 
     if (error) {
