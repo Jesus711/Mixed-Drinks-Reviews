@@ -14,7 +14,7 @@ import {
     CommandGroup,
 } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
-import { ingreds, units } from "../constants";
+import { units, ingredientGroups } from "../constants";
 import { IngredientRowProps } from '@/types';
 
 
@@ -34,8 +34,8 @@ const IngredientRow = ({ id, data, onChange, handleDelete }: IngredientRowProps)
                             className="lg:text-lg text-md justify-between"
 
                         >
-                            {data.name
-                                ? ingreds.find((ingredient) => ingredient.value === data.name)?.value
+                            {data.name !== ""
+                                ? data.name
                                 : "Select Ingredient..."}
                             <ChevronsUpDown className="opacity-50" />
                         </Button>
@@ -45,27 +45,30 @@ const IngredientRow = ({ id, data, onChange, handleDelete }: IngredientRowProps)
                             <CommandInput name='ingredient' placeholder="Search Ingredient..." className="sm:text-lg h-9 text-orange-400" />
                             <CommandList>
                                 <CommandEmpty className='flex justify-start items-center lg:text-lg text-md p-3'>No Ingredient Found</CommandEmpty>
-                                <CommandGroup>
-                                    {ingreds.map((ingredient, index) => (
-                                        <CommandItem
-                                            key={index}
-                                            value={ingredient.value}
-                                            className='flex justify-center items-center lg:text-lg text-md p-2 hover:bg-slate-800'
-                                            onSelect={(currentValue) => {
-                                                onChange(id, "name", currentValue === data.name ? "" : currentValue)
-                                                setOpen(false)
-                                            }}
-                                        >
-                                            {ingredient.label}
-                                            <Check
-                                                className={cn(
-                                                    "ml-auto",
-                                                    data.name === ingredient.label ? "opacity-100" : "opacity-0"
-                                                )}
-                                            />
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
+                                {ingredientGroups.map((group, groupIndex) => (
+                                    <CommandGroup key={groupIndex} heading={group.group} className='md:text-xl text-lg text-orange-200'>
+                                        {group.items.map((ingredient, index) => (
+                                            <CommandItem
+                                                key={index}
+                                                value={ingredient.value}
+                                                className='flex justify-center items-center text-orange-400 lg:text-lg text-md p-2 hover:bg-slate-800'
+                                                onSelect={(currentValue) => {
+                                                    onChange(id, "name", currentValue === data.name ? "" : currentValue)
+                                                    setOpen(false)
+                                                }}
+                                            >
+                                                {ingredient.label}
+                                                <Check
+                                                    className={cn(
+                                                        "ml-auto",
+                                                        "text-green-400",
+                                                        data.name === ingredient.label ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                ))}
                             </CommandList>
                         </Command>
                     </PopoverContent>
