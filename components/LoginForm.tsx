@@ -31,6 +31,8 @@ const LoginForm = ({updateLoading} : {updateLoading: (value: number) => void}) =
       toast.error("Recovery Error", {
         description: "Please enter your email and click Forgot Password? again."
       })
+      updateLoading(0);
+      return
     }
 
     toast.success("Password Reset Link sent!", {
