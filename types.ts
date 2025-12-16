@@ -13,6 +13,16 @@ type Ingredient = {
   details: string,
 }
 
+type IngredientItem = {
+  label: string,
+  value: string
+}
+
+type IngredientGroup = {
+  group: string,
+  items: IngredientItem[]
+}
+
 type Drink = {
   id: number,
   name: string,
@@ -56,6 +66,8 @@ export type {
     FormData,
     Drink,
     Ingredient,
+    IngredientGroup,
+    IngredientItem,
     DrinkSection,
     Measurement,
     IngredientRowProps
