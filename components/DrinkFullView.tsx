@@ -39,6 +39,10 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
 
   const handleStarClicked = (ratingClicked: number) => {
     setSelectedRating(ratingClicked)
+  }
+
+  const handleFinalRating = (ratingClicked: number) => {
+    setSelectedRating(ratingClicked)
     setOpenDialog(true);
   }
 
@@ -108,7 +112,7 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
       <CardHeader className='w-full flex-1 flex sm:flex-row flex-col justify-between items-center'>
         <div>
           <CardTitle className='xs:text-3xl text-2xl text-amber-100'>{name}</CardTitle>
-          <CardDescription className='xs:text-2xl text-lg sm:text-left text-center font-semibold text-orange-300'>{alcoholic === "Yes" ? "Alcoholic" : "Non-Alcoholic"}</CardDescription>
+          <CardDescription className='xs:text-2xl text-xl sm:text-left text-center font-semibold text-orange-300'>{alcoholic === "Yes" ? "Alcoholic" : "Non-Alcoholic"}</CardDescription>
         </div>
 
         {ratingCount === 0 ? (
@@ -117,10 +121,10 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
             <p className='sm:text-lg text-md'>Be the First!</p>
           </div>
         ) : (
-          <div className='flex flex-col'>
-            <StarRating rating={avgRating} onRate={handleStarClicked} />
+          <div className='flex flex-col gap-y-2'>
+            <StarRating rating={avgRating} onRate={handleStarClicked} onFinalRating={handleFinalRating} ratingSet={true} />
             <div className='flex text-xl gap-x-1.5 justify-center items-center'>
-              <h3 className='text-amber-400'>{avgRating}/5</h3>
+              <h3 className='text-amber-400 font-bold'>{avgRating}/5</h3>
               <p>({ratingCount})</p>
             </div>
           </div>
@@ -133,13 +137,13 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
           {userRated != -1 ? (
             <div className='flex flex-col justify-center items-center gap-y-2'>
               <h3 className='text-center text-2xl font-bold'>Your Rating: {userRated} Stars</h3>
-              <StarRating rating={userRated} onRate={handleStarClicked} />
+              <StarRating rating={userRated} onRate={handleStarClicked} onFinalRating={handleFinalRating} ratingSet={true} />
               <Button type='button' onClick={updateExistingRating} variant={"default"} className='bg-blue-500 text-lg px-3 cursor-pointer'>Update Rating</Button>
             </div>
           ) : (
-            <div>
+            <div className='flex flex-col justify-center items-center gap-y-2'>
               <h3 className='text-center text-2xl font-bold'>Select Your Rating:</h3>
-              <StarRating rating={selectedRating} onRate={handleStarClicked} />
+              <StarRating rating={selectedRating} onRate={handleStarClicked} onFinalRating={handleFinalRating} ratingSet={false} />
             </div>)
           }
         </div>
