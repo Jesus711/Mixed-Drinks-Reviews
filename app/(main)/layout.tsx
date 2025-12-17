@@ -78,7 +78,7 @@ export default function HomeLayout({children,}: {children: React.ReactNode}) {
                 </nav>
             </header>
 
-            <main className="p-6">{children}</main>
+            <main className="xs:p-6 p-4">{children}</main>
             <Toaster position="top-center"/>
         </div>
     )

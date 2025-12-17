@@ -175,12 +175,12 @@ const HomePage = () => {
 
 
   return (
-    <div className='flex-1 flex flex-col gap-y-9 px-5'>
+    <div className='flex-1 flex flex-col sm:gap-y-9 gap-y-5 px-5'>
 
-      {!loading && <h1 className='text-primary md:text-4xl md:text-left text-2xl text-center font-semibold'>Welcome <span className='text-blue-300'>{userName}</span></h1>}
+      {!loading && <h1 className='text-primary md:text-4xl md:text-left text-3xl text-center font-semibold'>Welcome <span className='text-blue-300'>{userName}</span></h1>}
 
       <section className='flex-1 flex flex-col gap-y-1.5'>
-        <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>Drink Recommendations: </h2>
+        <h2 className='text-primary md:text-3xl xs:text-2xl text-xl font-semibold md:text-left text-center'>Drink Recommendations: </h2>
         <ScrollArea className=' rounded-2xl border-transparent bg-clip-padding
             bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
             bg-origin-border whitespace-nowrap'>
@@ -200,7 +200,7 @@ const HomePage = () => {
 
       {(loading || prevViewedDrinks.length !== 0) &&
         <section className='flex-1 flex flex-col gap-y-1.5'>
-          <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>Previously Viewed:</h2>
+          <h2 className='text-primary md:text-3xl xs:text-2xl text-xl font-semibold md:text-left text-center'>Previously Viewed:</h2>
           <ScrollArea className='w-full rounded-2xl whitespace-nowrap border-transparent bg-clip-padding
             bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
             bg-origin-border'>
@@ -221,7 +221,7 @@ const HomePage = () => {
 
       {(loading || ratedDrinks.length !== 0) &&
         <section className='flex-1 flex flex-col gap-y-1.5'>
-          <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>Drinks rated by me:</h2>
+          <h2 className='text-primary md:text-3xl xs:text-2xl text-xl font-semibold md:text-left text-center'>Drinks rated by me:</h2>
           <ScrollArea className='w-full rounded-2xl whitespace-nowrap border-transparent bg-clip-padding
             bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
             bg-origin-border'>
@@ -241,7 +241,7 @@ const HomePage = () => {
 
         {(loading || createdDrinks.length !== 0) &&
           <section className='flex-1 flex flex-col gap-y-1.5'>
-            <h2 className='text-primary md:text-3xl text-xl font-semibold md:text-left text-center'>Drinks created by me:</h2>
+            <h2 className='text-primary md:text-3xl xs:text-2xl text-xl font-semibold md:text-left text-center'>Drinks created by me:</h2>
             <ScrollArea className='w-full rounded-2xl whitespace-nowrap border-transparent bg-clip-padding
               bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
               bg-origin-border'>
