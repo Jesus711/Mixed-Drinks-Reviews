@@ -151,7 +151,7 @@ const DrinkFullView = ({ id, name, category, alcoholic, glass, instructions, ima
           <h2 className='md:text-4xl text-3xl font-semibold text-center'>Ingredients:</h2>
           <ul className={`flex flex-col gap-y-2 text-left `}>
             {drink_ingredients.map((ingred, index) => (
-              <li className='md:text-3xl text-2xl' key={index}>{ingred.ingredient} {ingred.quantity === 0 ? "" : `- ${ingred.quantity}`} {ingred.unit === "" ? "" : ingred.unit} {ingred.details === "" || ingred.details === null ? "" : `- ${ingred.details}`}</li>
+              <li className='md:text-3xl text-2xl' key={index}>{ingred.ingredient} {ingred.quantity === 0 ? "" : `- ${Math.round(ingred.quantity * 100)/100}`} {ingred.unit === "" ? "" : ingred.unit} {ingred.details === "" || ingred.details === null ? "" : `- ${ingred.details}`}</li>
             ))}
           </ul>
         </div>

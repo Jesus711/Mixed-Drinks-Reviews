@@ -10,7 +10,7 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden">
+    <div className="h-dvh flex flex-col justify-center items-center relative overflow-hidden">
       <main className="flex flex-col justify-center items-center lg:gap-y-10 gap-y-8">
         <div className="flex flex-col justify-center items-center">
           <h1 className="lg:text-6xl sm:text-4xl xs:text-2xl text-xl text-center text-orange-400 font-bold">Welcome to Mixed Bevs Reviews!</h1>

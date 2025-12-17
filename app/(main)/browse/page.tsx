@@ -39,7 +39,6 @@ const Browse = () => {
   const searchParam = typeof params.get("search") === "string" ? params.get("search")! : "";
 
 
-
   const handlePageNav = (index: number) => {
     if (index < 1 || index > totalPages) {
       return;
@@ -136,8 +135,7 @@ const Browse = () => {
   }, [page, searchParam])
 
   const handleNavigation = () => {
-    let format_string = search.replace(" ", "_")
-    router.push(`/browse?search=${format_string}`)
+    router.push(`/browse?search=${search}`)
     setPage(1)
     setSearch("")
   }
